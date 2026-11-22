@@ -53,7 +53,7 @@ object KeyboardLayouts {
 
     private fun standardActionKeys() = listOf(
         specialKey("symbols", "123", KeyRole.SYMBOLS, 1.3f, "Ký hiệu"),
-        specialKey("emoji", "", KeyRole.EMOJI, 1.1f, "Biểu tượng cảm xúc"),
+        specialKey("action-emoji", "", KeyRole.EMOJI, 1.1f, "Biểu tượng cảm xúc"),
         commaKey("comma"),
         standardSpaceKey(widthWeight = 4.2f),
         periodKey("period"),

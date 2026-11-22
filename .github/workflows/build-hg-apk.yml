@@ -37,16 +37,16 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Java 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: "21"
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Install Android SDK & NDK
         run: |
@@ -91,7 +91,7 @@ jobs:
           fi
 
       - name: Upload APK as Workflow Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Hg-Keyboard-APK
           path: Hg-Keyboard-*.apk
@@ -99,7 +99,7 @@ jobs:
 
       - name: Publish APK to GitHub Release (Khi gắn Tag v*)
         if: startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: Hg-Keyboard-*.apk
           name: "Hg Keyboard ${{ github.ref_name }}"

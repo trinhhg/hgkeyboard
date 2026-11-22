@@ -47,15 +47,16 @@ object KeyboardLayouts {
             supportsVietnameseAlternates = true,
             showsTelexHints = inputMethod.isTelexFamily,
         )
-        // Digits move onto the top row only when no row of their own is on screen.
-        return if (isCompact) CompactDigitAlternates.decorate(layout) else layout
+        // Decorate layout with SwiftKey / Laban secondary symbols on letter keys
+        return CompactDigitAlternates.decorate(layout, decorateDigitsRow = isCompact)
     }
 
     private fun standardActionKeys() = listOf(
-        specialKey("symbols", "?123", KeyRole.SYMBOLS, 1.7f, "Ký hiệu"),
+        specialKey("symbols", "123", KeyRole.SYMBOLS, 1.3f, "Ký hiệu"),
+        specialKey("emoji", "", KeyRole.EMOJI, 1.1f, "Biểu tượng cảm xúc"),
         commaKey("comma"),
-        standardSpaceKey(),
+        standardSpaceKey(widthWeight = 4.2f),
         periodKey("period"),
-        specialKey("enter", "", KeyRole.ENTER, 1.7f, "Enter"),
+        specialKey("enter", "", KeyRole.ENTER, 1.4f, "Enter"),
     )
 }

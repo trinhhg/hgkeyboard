@@ -74,7 +74,7 @@ internal class KeyRenderer(private val metrics: RenderMetrics) {
         canvas.drawText(label, key.bounds.centerX, baseline, labelPaint)
 
         val secondaryLabel = key.spec.secondaryLabel ?: return
-        labelPaint.color = theme.accentColor
+        labelPaint.color = theme.secondaryLabelColor
         labelPaint.textSize = metrics.labelSp(SecondaryLabelSizeSp, theme)
         labelPaint.textAlign = Paint.Align.RIGHT
         labelPaint.getFontMetrics(fontMetrics)

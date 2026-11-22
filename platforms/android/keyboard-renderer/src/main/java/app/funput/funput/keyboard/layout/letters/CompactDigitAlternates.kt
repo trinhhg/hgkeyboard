@@ -1,42 +1,66 @@
 package app.funput.funput.keyboard.layout.letters
 
+import app.funput.funput.keyboard.model.KeyRole
 import app.funput.funput.keyboard.model.KeySpec
 import app.funput.funput.keyboard.model.KeyboardLayout
 import app.funput.funput.keyboard.model.KeyboardRow
 import app.funput.funput.keyboard.popover.model.KeyAlternate
 
 /**
- * Digit hints and long-press digits for the top character row.
- *
- * A compact page — letters, search, email or URL — hides the number row, which leaves the symbols
- * page as the only way to reach a digit. Printing the digit on the keycap and offering it as the
- * pre-selected long-press alternate restores that reach without spending a row.
+ * Secondary symbols and long-press alternates matching Microsoft SwiftKey and Laban Key:
+ * - Row 1 (top): qwertyuiop -> 1 2 3 4 5 6 7 8 9 0
+ * - Row 2 (middle): asdfghjkl -> @ # & * - + = ( )
+ * - Row 3 (bottom): zxcvbnm -> _ đ " ' : ; /
  */
 internal object CompactDigitAlternates {
-    private const val RowCharacters = "qwertyuiop"
-    private const val Digits = "1234567890"
+    private const val Row1Characters = "qwertyuiop"
+    private const val Row1Symbols = "1234567890"
 
-    fun decorate(layout: KeyboardLayout): KeyboardLayout =
-        layout.copy(rows = layout.rows.map(::decorate))
+    private const val Row2Characters = "asdfghjkl"
+    private const val Row2Symbols = "@#&*-+=()"
 
-    /**
-     * Matches the row by its own labels rather than by index: the compact page has no number
-     * row in front of it, so the top character row is not at a fixed position.
-     */
-    private fun decorate(row: KeyboardRow): KeyboardRow {
-        if (row.keys.map { it.label } != RowCharacters.map(Char::toString)) return row
-        return row.copy(keys = row.keys.mapIndexed { index, key -> apply(Digits[index], key) })
+    private const val Row3Characters = "zxcvbnm"
+    private const val Row3Symbols = "_đ\"':;/"
+
+    fun decorate(layout: KeyboardLayout, decorateDigitsRow: Boolean = true): KeyboardLayout =
+        layout.copy(rows = layout.rows.map { decorate(it, decorateDigitsRow) })
+
+    private fun decorate(row: KeyboardRow, decorateDigitsRow: Boolean): KeyboardRow {
+        val letterLabels = row.keys
+            .filter { it.role == KeyRole.CHARACTER }
+            .map { it.label }
+            .joinToString("")
+
+        return when (letterLabels) {
+            Row1Characters -> {
+                if (decorateDigitsRow) {
+                    row.copy(keys = row.keys.mapIndexed { index, key -> apply(Row1Symbols[index], key, "số") })
+                } else {
+                    row
+                }
+            }
+            Row2Characters -> {
+                row.copy(keys = row.keys.mapIndexed { index, key -> apply(Row2Symbols[index], key, "ký tự") })
+            }
+            Row3Characters -> {
+                row.copy(keys = row.keys.map { key ->
+                    val idx = Row3Characters.indexOf(key.label.firstOrNull() ?: ' ')
+                    if (idx >= 0 && idx < Row3Symbols.length) {
+                        apply(Row3Symbols[idx], key, "ký tự")
+                    } else {
+                        key
+                    }
+                })
+            }
+            else -> row
+        }
     }
 
-    private fun apply(digit: Char, key: KeySpec): KeySpec = key.copy(
-        // A Telex tone hint keeps the slot it already owns — `r` stays the hỏi key — and the
-        // digit joins it on the right, where every other key carries one.
-        secondaryLabel = key.secondaryLabel?.let { "$it $digit" } ?: digit.toString(),
-        accessibilityLabel = "${key.accessibilityLabel}, số $digit",
-        // First place wins the palette's default selection, which is what makes a plain
-        // hold-and-release type the digit.
+    private fun apply(symbol: Char, key: KeySpec, typePrefix: String): KeySpec = key.copy(
+        secondaryLabel = symbol.toString(),
+        accessibilityLabel = "${key.accessibilityLabel}, $typePrefix $symbol",
         alternates = listOf(
-            KeyAlternate.Text(digit.toString(), accessibilityLabel = "Số $digit"),
+            KeyAlternate.Text(symbol.toString(), accessibilityLabel = "$typePrefix $symbol"),
         ) + key.alternates,
     )
 }

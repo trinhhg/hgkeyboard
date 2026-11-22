@@ -24,14 +24,16 @@ internal class SpacebarContentRenderer(private val metrics: RenderMetrics) {
         language: KeyboardLanguage,
         customLabel: String? = null,
     ) {
-        labelPaint.color = theme.secondaryLabelColor
+        val isLabanSpace = theme.accentColor == 0xFF2563EB.toInt()
+        labelPaint.color = if (isLabanSpace) 0xFF1D4ED8.toInt() else theme.secondaryLabelColor
         labelPaint.textSize = metrics.labelSp(LabelSizeSp, theme)
         labelPaint.typeface = KeyLabelTypography.specialTypeface(theme)
         labelPaint.getFontMetrics(fontMetrics)
         val centerX = key.bounds.centerX
         val centerY = key.bounds.centerY
         val baseline = centerY - (fontMetrics.ascent + fontMetrics.descent) / 2f
-        canvas.drawText(customLabel ?: language.displayLabel, centerX, baseline, labelPaint)
+        val labelText = customLabel ?: if (language == KeyboardLanguage.VIETNAMESE) "Hg" else language.displayLabel
+        canvas.drawText(labelText, centerX, baseline, labelPaint)
 
         if (customLabel != null) return
 

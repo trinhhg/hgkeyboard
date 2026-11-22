@@ -83,6 +83,66 @@ object KeyboardThemes {
     /** Apple's Liquid Glass: clear lensed panes over a reflective ground. */
     val LiquidGlass: KeyboardTheme = LiquidGlassKeyboardTheme
 
+    /** Laban Key preset: light grey background, crisp white keys, distinct blue accent. */
+    val Laban: KeyboardTheme = KeyboardTheme(
+        backgroundStartColor = 0xFFECEEF1.toInt(),
+        backgroundEndColor = 0xFFE2E4E8.toInt(),
+        keyColor = 0xFFFFFFFF.toInt(),
+        specialKeyColor = 0xFFD8DCE2.toInt(),
+        keyBorderColor = 0x00000000,
+        keyShadowColor = 0x22000000,
+        pressedKeyColor = 0xFFE0E7FF.toInt(),
+        pressedKeyBorderColor = 0xFF2563EB.toInt(),
+        activatedKeyColor = 0xFF2563EB.toInt(),
+        activatedKeyBorderColor = 0x00000000,
+        labelColor = 0xFF1E293B.toInt(),
+        secondaryLabelColor = 0xFF64748B.toInt(),
+        accentColor = 0xFF2563EB.toInt(),
+        keyCornerRadiusDp = 7f,
+        keyBorderWidthDp = 0f,
+        keyShadowOffsetDp = 1.2f,
+        pressedKeyShadowOffsetDp = 0f,
+        specialLabelColor = 0xFF334155.toInt(),
+        accentKeyColor = 0xFF2563EB.toInt(),
+        accentLabelColor = 0xFFFFFFFF.toInt(),
+        popupSurfaceColor = 0xFFFFFFFF.toInt(),
+        suggestionHighlightColor = 0xFF2563EB.toInt(),
+        pressedKeyScale = 1.02f,
+        suggestionDividerColor = 0x1E000000,
+        popupShadowColor = 0x33000000,
+        keySurfaceStyle = KeyboardKeySurfaceStyle.FLAT,
+    )
+
+    /** Microsoft SwiftKey preset: clean light grey, rounded keycaps, subtle blue accent. */
+    val SwiftKey: KeyboardTheme = KeyboardTheme(
+        backgroundStartColor = 0xFFF1F3F5.toInt(),
+        backgroundEndColor = 0xFFE9ECEF.toInt(),
+        keyColor = 0xFFFFFFFF.toInt(),
+        specialKeyColor = 0xFFE2E6EA.toInt(),
+        keyBorderColor = 0x00000000,
+        keyShadowColor = 0x1A000000,
+        pressedKeyColor = 0xFFDDE3EA.toInt(),
+        pressedKeyBorderColor = 0x00000000,
+        activatedKeyColor = 0xFF0284C7.toInt(),
+        activatedKeyBorderColor = 0x00000000,
+        labelColor = 0xFF111827.toInt(),
+        secondaryLabelColor = 0xFF6B7280.toInt(),
+        accentColor = 0xFF0284C7.toInt(),
+        keyCornerRadiusDp = 6f,
+        keyBorderWidthDp = 0f,
+        keyShadowOffsetDp = 1.0f,
+        pressedKeyShadowOffsetDp = 0f,
+        specialLabelColor = 0xFF374151.toInt(),
+        accentKeyColor = 0xFF0284C7.toInt(),
+        accentLabelColor = 0xFFFFFFFF.toInt(),
+        popupSurfaceColor = 0xFFFFFFFF.toInt(),
+        suggestionHighlightColor = 0xFF0284C7.toInt(),
+        pressedKeyScale = 1.04f,
+        suggestionDividerColor = 0x1A000000,
+        popupShadowColor = 0x2A000000,
+        keySurfaceStyle = KeyboardKeySurfaceStyle.FLAT,
+    )
+
     /** Light floral preset: a blush-to-lilac gradient under near-white keycaps. */
     val Blossom: KeyboardTheme = BlossomKeyboardTheme
 

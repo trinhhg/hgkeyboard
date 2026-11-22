@@ -65,11 +65,19 @@ internal fun ClipboardSwipeRow(
     val preview = ClipboardRowTextContent.preview(entry.text)
     val pinLabel = stringResource(if (entry.isPinned) R.string.clipboard_unpin else R.string.clipboard_pin)
     val deleteLabel = stringResource(R.string.clipboard_delete)
-    Box(Modifier.fillMaxWidth().height(44.dp)) {
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 3.dp)
+            .heightIn(min = 52.dp)
+    ) {
         DeleteAction(deleteLabel, { onReveal(false); onRemove() }, Modifier.align(Alignment.CenterEnd))
         Row(
             Modifier.fillMaxSize().offset { IntOffset(offset.roundToInt(), 0) }
-                .background(Color(palette.backgroundEnd))
+                .background(
+                    Color(palette.searchSurface),
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
+                )
                 .pointerInput(entry.id, revealed, widthPx) {
                     detectHorizontalDragGestures(
                         onDragStart = { dragging = true; dragOffset = target },
@@ -105,7 +113,8 @@ internal fun shouldRevealClipboardAction(offsetPx: Float, actionWidthPx: Float):
 @Composable
 private fun DeleteAction(label: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Row(
-        modifier.width(ActionWidth).fillMaxHeight().background(Color(0xFFB3261E))
+        modifier.width(ActionWidth).fillMaxHeight()
+            .background(Color(0xFFB3261E), shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
             .semantics { contentDescription = label; role = Role.Button }
             .clickable(onClick = onClick),
         horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally),

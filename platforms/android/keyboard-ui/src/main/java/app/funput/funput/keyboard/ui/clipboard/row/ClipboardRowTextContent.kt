@@ -34,14 +34,15 @@ internal object ClipboardRowTextContent {
             { resources.getString(R.string.clipboard_hours_ago, it) },
             { resources.getString(R.string.clipboard_days_ago, it) },
         )
-        Column(modifier.padding(start = 12.dp)) {
+        Column(modifier.padding(start = 12.dp, top = 6.dp, bottom = 6.dp, end = 8.dp)) {
             BasicText(
                 preview, style = TextStyle(Color(palette.readable(palette.label)), 14.sp),
-                maxLines = 1, overflow = TextOverflow.Ellipsis,
+                maxLines = 2, overflow = TextOverflow.Ellipsis,
             )
             BasicText(
-                ClipboardRowText.relativeTime(entry.capturedAt, now, strings),
+                ClipboardRowText.formatTimestamp(entry.capturedAt),
                 style = TextStyle(Color(palette.readable(palette.secondaryLabel)), 11.sp),
+                modifier = Modifier.padding(top = 2.dp),
             )
         }
     }

@@ -6,6 +6,22 @@ object BuiltInKeyboardThemeSource : InstalledThemeSource {
 
     override fun loadThemes(): List<KeyboardThemeDescriptor> = listOf(
         KeyboardThemeDescriptor(
+            id = KeyboardThemeId.Laban,
+            version = 1,
+            name = "Laban Key",
+            author = FunputAuthor,
+            origin = KeyboardThemeOrigin.BUILT_IN,
+            theme = KeyboardThemes.Laban,
+        ),
+        KeyboardThemeDescriptor(
+            id = KeyboardThemeId.SwiftKey,
+            version = 1,
+            name = "SwiftKey",
+            author = FunputAuthor,
+            origin = KeyboardThemeOrigin.BUILT_IN,
+            theme = KeyboardThemes.SwiftKey,
+        ),
+        KeyboardThemeDescriptor(
             id = KeyboardThemeId.LiquidGlass,
             version = 1,
             name = "Liquid Glass",

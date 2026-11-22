@@ -27,6 +27,13 @@ internal object ClipboardRowText {
         return if (hours < 24) strings.hoursAgo(hours) else strings.daysAgo(hours / 24)
     }
 
+    private val TimestampFormatter = java.time.format.DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy")
+        .withZone(java.time.ZoneId.systemDefault())
+
+    fun formatTimestamp(capturedAt: Instant): String {
+        return TimestampFormatter.format(capturedAt)
+    }
+
     private val Whitespace = Regex("\\s+")
 }
 

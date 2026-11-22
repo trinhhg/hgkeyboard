@@ -1,17 +1,26 @@
 package app.funput.funput.keyboard.ui.clipboard
+
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -21,12 +30,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.funput.funput.keyboard.ui.R
 import app.funput.funput.keyboard.ui.clipboard.row.ClipboardSwipeRow
 import app.funput.funput.keyboard.ui.panel.KeyboardPanelPalette
 import java.time.Instant
+
 @Composable
 internal fun ClipboardPanelContent(
     entries: List<KeyboardClipboardEntry>, loading: Boolean, now: Instant,
@@ -37,49 +48,165 @@ internal fun ClipboardPanelContent(
 ) {
     var preview by remember { mutableStateOf<KeyboardClipboardEntry?>(null) }
     var revealedId by remember { mutableStateOf<java.util.UUID?>(null) }
+    var currentTab by remember { mutableIntStateOf(1) } // 0: GHI CHÚ, 1: BẢNG NHỚ TẠM (mặc định), 2: GÕ TẮT
     val listState = rememberLazyListState()
+
     LaunchedEffect(reset) { listState.scrollToItem(0); revealedId = null }
     LaunchedEffect(entries) {
         if (entries.none { it.id == revealedId }) revealedId = null
     }
+
     Column(Modifier.fillMaxSize()) {
+        // Laban Key Style Top Tab Header (< GHI CHÚ | BẢNG NHỚ TẠM | GÕ TẮT)
+        LabanClipboardTabBar(
+            selectedTab = currentTab,
+            onSelectTab = { currentTab = it },
+            onReturn = onReturn,
+            palette = palette,
+        )
+
         Box(Modifier.weight(1f)) {
-            when { loading -> Empty(stringResource(R.string.clipboard_loading), null, palette)
-                entries.isEmpty() -> Empty(
-                    stringResource(R.string.clipboard_empty_title),
-                    stringResource(R.string.clipboard_empty_detail), palette,
-                )
-                else -> LazyColumn(state = listState) {
-                    clipboardGroups(entries).forEach { group ->
-                        stickyHeader(group.pinned) { Header(group.pinned, palette) }
-                        items(group.entries.size, key = { group.entries[it].id }) { index ->
-                            val entry = group.entries[index]
-                            ClipboardSwipeRow(
-                                entry, now, palette, revealedId == entry.id,
-                                onReveal = { reveal ->
-                                    revealedId = if (reveal) entry.id else revealedId.takeUnless { it == entry.id }
-                                },
-                                onSelect = { if (revealedId == null) onSelect(entry) else revealedId = null },
-                                onPin = { onPin(entry) }, onRemove = { onRemove(entry) },
-                                onPreview = {
-                                    if (revealedId == null) preview = entry else revealedId = null
-                                },
-                            )
+            when (currentTab) {
+                0 -> Empty("Ghi chú", "Chưa có ghi chú nào. Ghi chú cá nhân sẽ hiển thị tại đây.", palette)
+                2 -> Empty("Gõ tắt", "Chưa có phím gõ tắt nào. Bạn có thể cài đặt thêm trong Cài đặt Hg.", palette)
+                else -> {
+                    when {
+                        loading -> Empty(stringResource(R.string.clipboard_loading), null, palette)
+                        entries.isEmpty() -> Empty(
+                            stringResource(R.string.clipboard_empty_title),
+                            stringResource(R.string.clipboard_empty_detail), palette,
+                        )
+                        else -> LazyColumn(
+                            state = listState,
+                            modifier = Modifier.fillMaxSize().padding(horizontal = 4.dp, vertical = 4.dp),
+                        ) {
+                            clipboardGroups(entries).forEach { group ->
+                                stickyHeader(group.pinned) { Header(group.pinned, palette) }
+                                items(group.entries.size, key = { group.entries[it].id }) { index ->
+                                    val entry = group.entries[index]
+                                    ClipboardSwipeRow(
+                                        entry, now, palette, revealedId == entry.id,
+                                        onReveal = { reveal ->
+                                            revealedId = if (reveal) entry.id else revealedId.takeUnless { it == entry.id }
+                                        },
+                                        onSelect = { if (revealedId == null) onSelect(entry) else revealedId = null },
+                                        onPin = { onPin(entry) }, onRemove = { onRemove(entry) },
+                                        onPreview = {
+                                            if (revealedId == null) preview = entry else revealedId = null
+                                        },
+                                    )
+                                }
+                            }
                         }
                     }
                 }
             }
-            preview?.let { entry -> ClipboardPreviewOverlay(
-                entry, palette, { preview = null },
-                { preview = null; onPin(entry) }, { preview = null; onRemove(entry) },
-            ) }
+
+            preview?.let { entry ->
+                ClipboardPreviewOverlay(
+                    entry, palette, { preview = null },
+                    { preview = null; onPin(entry) }, { preview = null; onRemove(entry) },
+                )
+            }
         }
-        Box(Modifier.fillMaxWidth().height(1.dp).background(Color(palette.divider)))
+
+        Box(Modifier.fillMaxWidth().height(1.dp).background(Color(palette.divider).copy(alpha = 0.2f)))
         Box(Modifier.fillMaxWidth().height(46.dp)) {
             ClipboardBottomBar(palette, entries.isNotEmpty(), onReturn, onClear, onDelete)
         }
     }
 }
+
+@Composable
+private fun LabanClipboardTabBar(
+    selectedTab: Int,
+    onSelectTab: (Int) -> Unit,
+    onReturn: () -> Unit,
+    palette: KeyboardPanelPalette,
+) {
+    val tabs = listOf("GHI CHÚ", "BẢNG NHỚ TẠM", "GÕ TẮT")
+    val activeColor = Color(0xFF2563EB) // Blue accent characteristic of Laban Key
+    val inactiveColor = Color(palette.readable(palette.secondaryLabel))
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(palette.backgroundStart))
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(44.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            // Nút Back (<)
+            Box(
+                modifier = Modifier
+                    .size(44.dp)
+                    .clickable(onClick = onReturn),
+                contentAlignment = Alignment.Center,
+            ) {
+                androidx.compose.foundation.Canvas(modifier = Modifier.size(16.dp)) {
+                    val path = androidx.compose.ui.graphics.Path().apply {
+                        moveTo(size.width * 0.65f, size.height * 0.15f)
+                        lineTo(size.width * 0.25f, size.height * 0.5f)
+                        lineTo(size.width * 0.65f, size.height * 0.85f)
+                    }
+                    drawPath(
+                        path = path,
+                        color = Color(palette.readable(palette.label)),
+                        style = androidx.compose.ui.graphics.drawscope.Stroke(width = 2.dp.toPx()),
+                    )
+                }
+            }
+
+            // 3 Tabs: GHI CHÚ | BẢNG NHỚ TẠM | GÕ TẮT
+            tabs.forEachIndexed { index, title ->
+                val isSelected = selectedTab == index
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .clickable { onSelectTab(index) },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxHeight(),
+                        verticalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Spacer(modifier = Modifier.height(6.dp))
+                        BasicText(
+                            text = title,
+                            style = TextStyle(
+                                color = if (isSelected) activeColor else inactiveColor,
+                                fontSize = 13.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                            ),
+                        )
+                        if (isSelected) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(0.85f)
+                                    .height(2.5.dp)
+                                    .background(activeColor, RoundedCornerShape(topStart = 2.dp, topEnd = 2.dp)),
+                            )
+                        } else {
+                            Spacer(modifier = Modifier.height(2.5.dp))
+                        }
+                    }
+                }
+            }
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(Color(palette.divider).copy(alpha = 0.25f)),
+        )
+    }
+}
+
 @Composable
 private fun Header(pinned: Boolean, palette: KeyboardPanelPalette) {
     BasicText(
@@ -88,12 +215,29 @@ private fun Header(pinned: Boolean, palette: KeyboardPanelPalette) {
         TextStyle(Color(palette.readable(palette.secondaryLabel)), 12.sp, fontWeight = FontWeight.Medium),
     )
 }
-@Composable private fun Empty(title: String, detail: String?, palette: KeyboardPanelPalette) {
-    Column(Modifier.fillMaxSize().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center) {
-        BasicText(title, Modifier.fillMaxWidth(), TextStyle(Color(palette.readable(palette.label)), 15.sp,
-            fontWeight = FontWeight.Medium, textAlign = androidx.compose.ui.text.style.TextAlign.Center))
-        detail?.let { BasicText(it, Modifier.fillMaxWidth().padding(top = 6.dp),
-            TextStyle(Color(palette.readable(palette.secondaryLabel)), 13.sp, textAlign = androidx.compose.ui.text.style.TextAlign.Center)) }
+
+@Composable
+private fun Empty(title: String, detail: String?, palette: KeyboardPanelPalette) {
+    Column(
+        Modifier.fillMaxSize().padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        BasicText(
+            title, Modifier.fillMaxWidth(),
+            TextStyle(
+                Color(palette.readable(palette.label)), 15.sp,
+                fontWeight = FontWeight.Medium, textAlign = TextAlign.Center,
+            ),
+        )
+        detail?.let {
+            BasicText(
+                it, Modifier.fillMaxWidth().padding(top = 6.dp),
+                TextStyle(
+                    Color(palette.readable(palette.secondaryLabel)), 13.sp,
+                    textAlign = TextAlign.Center,
+                ),
+            )
+        }
     }
 }

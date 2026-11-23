@@ -48,10 +48,10 @@ internal class ImeClipboardUiBinding(
                 if (pasted) {
                     view?.showLettersPanel()
                 } else if (entry.imagePath != null) {
-                    android.widget.Toast.makeText(
-                        context,
+                    Toast.makeText(
+                        appContext,
                         "Ứng dụng này chưa hỗ trợ dán ảnh trực tiếp",
-                        android.widget.Toast.LENGTH_SHORT,
+                        Toast.LENGTH_SHORT,
                     ).show()
                 }
             }

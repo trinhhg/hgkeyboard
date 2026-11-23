@@ -6,9 +6,16 @@ import app.funput.funput.keyboard.model.KeyboardEditorMode
 import app.funput.funput.keyboard.model.KeyboardInputMethod
 import app.funput.funput.keyboard.model.KeyboardLayout
 import app.funput.funput.keyboard.model.KeyboardLayoutMode
+import app.funput.funput.keyboard.model.KeyboardStyleOptions
 
 /** Owns layout-affecting state and rebuilds the immutable layout when it changes. */
 internal class KeyboardSurfaceLayoutState(private val onLayoutChanged: () -> Unit) {
+    var styleOptions = KeyboardStyleOptions.Default
+        set(value) {
+            if (field == value) return
+            field = value
+            refresh()
+        }
     var layoutOverride: KeyboardLayout? = null
         set(value) {
             if (field == value) return
@@ -67,5 +74,6 @@ internal class KeyboardSurfaceLayoutState(private val onLayoutChanged: () -> Uni
         suggestionsEnabled = suggestionsEnabled,
         systemInputMethodSwitcherVisible = systemInputMethodSwitcherVisible,
         showsNumberRow = showsNumberRow,
+        styleOptions = styleOptions,
     )
 }

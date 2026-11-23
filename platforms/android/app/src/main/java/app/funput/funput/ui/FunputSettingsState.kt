@@ -15,6 +15,8 @@ import app.funput.funput.ime.settings.KeyboardFeedbackPreferences
 import app.funput.funput.ime.settings.KeyboardFeedbackSettings
 import app.funput.funput.ime.settings.KeyboardPlacementSettings
 import app.funput.funput.ime.settings.KeyboardSizingSettings
+import app.funput.funput.ime.settings.KeyboardStylePreferences
+import app.funput.funput.ime.settings.KeyboardStyleSettings
 import app.funput.funput.ime.settings.KeyboardThemeSelection
 import app.funput.funput.ime.settings.KeyboardThemeSettings
 import app.funput.funput.ime.settings.NumberRowSettings
@@ -47,6 +49,7 @@ internal class FunputSettingsState(
     val clipboardStore: ClipboardSettings,
     val feedbackStore: KeyboardFeedbackSettings,
     val numberRowStore: NumberRowSettings,
+    val styleStore: KeyboardStyleSettings,
     val smartCompositionStore: SmartCompositionSettings,
     val smartGestureStore: SmartGestureSettings,
     val letterReturnStore: LetterPageReturnSettings,
@@ -60,6 +63,7 @@ internal class FunputSettingsState(
     val clipboard: ClipboardPreferences,
     val feedback: KeyboardFeedbackPreferences,
     val showsNumberRow: Boolean,
+    val keyboardStyle: KeyboardStylePreferences,
     val smartGesturesEnabled: Boolean,
     val returnsToLettersEnabled: Boolean,
     val smartComposition: SmartCompositionPreferences,
@@ -81,6 +85,8 @@ internal fun rememberFunputSettings(): FunputSettingsState {
     val feedback by stores.feedbackStore.preferences.collectAsState(KeyboardFeedbackPreferences.Default)
     val showsNumberRow by stores.numberRowStore.showsNumberRow
         .collectAsState(NumberRowSettings.DefaultShowsNumberRow)
+    val keyboardStyle by stores.styleStore.preferences
+        .collectAsState(KeyboardStylePreferences.Default)
     val smartGesturesEnabled by stores.smartGestureStore.enabled
         .collectAsState(SmartGestureSettings.DefaultEnabled)
     val returnsToLettersEnabled by stores.letterReturnStore.enabled
@@ -100,6 +106,7 @@ internal fun rememberFunputSettings(): FunputSettingsState {
         clipboardStore = stores.clipboard,
         feedbackStore = stores.feedbackStore,
         numberRowStore = stores.numberRowStore,
+        styleStore = stores.styleStore,
         smartCompositionStore = stores.smartCompositionStore,
         smartGestureStore = stores.smartGestureStore,
         letterReturnStore = stores.letterReturnStore,
@@ -113,6 +120,7 @@ internal fun rememberFunputSettings(): FunputSettingsState {
         clipboard = clipboard,
         feedback = feedback,
         showsNumberRow = showsNumberRow,
+        keyboardStyle = keyboardStyle,
         smartGesturesEnabled = smartGesturesEnabled,
         returnsToLettersEnabled = returnsToLettersEnabled,
         smartComposition = smartComposition,

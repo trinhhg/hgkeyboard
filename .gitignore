@@ -45,3 +45,7 @@ __pycache__/
 # Local profiling dumps and manual speech benchmark runs.
 *.hprof
 /docs/features/android-speech-spike/runs/
+
+# Downloaded or built Android packages
+*.apk
+*.xapk

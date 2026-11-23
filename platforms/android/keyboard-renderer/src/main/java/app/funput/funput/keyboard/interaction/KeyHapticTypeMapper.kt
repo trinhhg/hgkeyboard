@@ -29,6 +29,9 @@ internal object KeyHapticTypeMapper {
         KeyRole.CLIPBOARD,
         KeyRole.EMOJI,
         KeyRole.MICROPHONE,
+        KeyRole.THEME,
+        KeyRole.SETTINGS,
+        KeyRole.TOOLBAR_TOGGLE,
         -> KeyboardHapticType.CONTROL
 
         KeyRole.BACKSPACE -> KeyboardHapticType.DELETE

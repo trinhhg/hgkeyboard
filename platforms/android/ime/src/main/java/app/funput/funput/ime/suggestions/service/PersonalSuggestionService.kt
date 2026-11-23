@@ -146,5 +146,5 @@ internal class PersonalSuggestionService(
     }
 }
 
-/** The shortest prefix worth completing. A single character is asked about only as a prediction's context. */
-private const val MinimumPrefix = 2
+/** The shortest prefix worth completing from the 1st typed character (Laban Key responsiveness). */
+private const val MinimumPrefix = 1

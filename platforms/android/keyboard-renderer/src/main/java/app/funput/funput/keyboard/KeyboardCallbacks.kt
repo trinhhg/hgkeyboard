@@ -13,6 +13,8 @@ class KeyboardCallbacks : KeyboardUtilityDispatcher {
     var onEmojiRequested: (() -> Unit)? = null
     var onPlacementEditorRequested: (() -> Unit)? = null
     var onSettingsRequested: (() -> Unit)? = null
+    var onThemeRequested: (() -> Unit)? = null
+    internal var onToolbarToggleRequested: (() -> Unit)? = null
     var onClipboardPanelRequested: (() -> Unit)? = null
     var onClipboardPasteRequested: (() -> Unit)? = null
     var onSuggestionSelected: ((SuggestionSelection) -> Unit)? = null
@@ -31,6 +33,8 @@ class KeyboardCallbacks : KeyboardUtilityDispatcher {
             KeyboardUtilityAction.EMOJI -> onEmojiRequested?.invoke()
             KeyboardUtilityAction.PLACEMENT -> onPlacementEditorRequested?.invoke()
             KeyboardUtilityAction.SETTINGS -> onSettingsRequested?.invoke()
+            KeyboardUtilityAction.THEME -> onThemeRequested?.invoke()
+            KeyboardUtilityAction.TOOLBAR_TOGGLE -> onToolbarToggleRequested?.invoke()
             KeyboardUtilityAction.CLIPBOARD_PANEL -> onClipboardPanelRequested?.invoke()
             KeyboardUtilityAction.CLIPBOARD_PASTE -> onClipboardPasteRequested?.invoke()
         }

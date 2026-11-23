@@ -16,6 +16,7 @@ import app.funput.funput.keyboard.model.ShiftState
 import app.funput.funput.keyboard.placement.KeyboardPlacementPreferences
 import app.funput.funput.keyboard.suggestion.SuggestionChip
 import app.funput.funput.keyboard.ui.clipboard.KeyboardClipboardEntry
+import app.funput.funput.keyboard.ui.clipboard.KeyboardShortcutEntry
 import app.funput.funput.keyboard.ui.host.KeyboardHostMeasure
 import app.funput.funput.keyboard.ui.host.bindKeyboardToolbar
 import app.funput.funput.keyboard.ui.localtext.LocalTextFields
@@ -52,6 +53,7 @@ class FunputKeyboardView @JvmOverloads constructor(
         clearSpeech = speech::clear,
         createEmojiPanel = panelFactory::createEmoji,
         createClipboardPanel = panelFactory::createClipboard,
+        createThemePanel = panelFactory::createTheme,
         attachPanel = { contentHost.addView(it, matchParentLayoutParams()) },
         onPanelChanging = callbacks::dispatchPanelChanging,
         onPanelChanged = callbacks::dispatchPanelChanged,
@@ -72,6 +74,7 @@ class FunputKeyboardView @JvmOverloads constructor(
     var placementKeyVisible: Boolean by keyboardSurface::placementKeyVisible
     var toolbarArrangement by keyboardSurface::toolbarArrangement
     var showsNumberRow: Boolean by keyboardSurface::showsNumberRow
+    var styleOptions: app.funput.funput.keyboard.model.KeyboardStyleOptions by keyboardSurface::styleOptions
     var suggestionBarEnabled: Boolean
         get() = keyboardSurface.suggestionBarEnabled
         set(value) {
@@ -98,6 +101,7 @@ class FunputKeyboardView @JvmOverloads constructor(
     var clipboardHint: KeyboardClipboardHint? by keyboardSurface::clipboardHint
     var clipboardPanelEnabled: Boolean by clipboardState::enabled
     var clipboardEntries: List<KeyboardClipboardEntry> by clipboardState::entries
+    var shortcutEntries: List<KeyboardShortcutEntry> by clipboardState::shortcuts
     var clipboardHistoryLoading: Boolean by clipboardState::loading
     var language: KeyboardLanguage by keyboardSurface::language
     var areSmartGesturesEnabled by keyboardSurface::areSmartGesturesEnabled
@@ -115,7 +119,7 @@ class FunputKeyboardView @JvmOverloads constructor(
         keyboardSurface.callbacks.onKeyAction = ::routeKeyAction
         callbacks.bindSuggestions(keyboardSurface.callbacks)
         bindKeyboardToolbar(keyboardSurface, callbacks, ::openEmojiFromKeyboard,
-            ::showClipboardPanel, placement::showPicker)
+            ::showClipboardPanel, placement::showPicker, ::showThemePanel)
         setBackgroundColor(keyboardTheme.backgroundEndColor)
         safeArea.install()
     }
@@ -123,6 +127,7 @@ class FunputKeyboardView @JvmOverloads constructor(
     fun showSpeechPanel(): Unit = panelCoordinator.showSpeech()
     fun showEmojiPanel(): Unit = panelCoordinator.showEmoji()
     fun showLettersPanel(): Unit = panelCoordinator.showLetters()
+    fun showThemePanel(): Unit = panelCoordinator.showTheme()
     fun showClipboardPanel() {
         if (!clipboardState.available() || activePanel == KeyboardPanel.CLIPBOARD) return
         panelCoordinator.showClipboard(); callbacks.dispatchClipboardPanelOpened()

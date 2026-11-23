@@ -7,6 +7,7 @@ import app.funput.funput.keyboard.model.SuggestionSelection
 import app.funput.funput.keyboard.placement.KeyboardPlacementPreferences
 import app.funput.funput.keyboard.suggestion.actions.SuggestionAction
 import app.funput.funput.keyboard.ui.clipboard.KeyboardClipboardEntry
+import app.funput.funput.keyboard.ui.clipboard.KeyboardShortcutEntry
 
 /** Host callbacks emitted by the complete Funput keyboard UI. */
 class FunputKeyboardCallbacks {
@@ -15,6 +16,7 @@ class FunputKeyboardCallbacks {
     var onKeyAction: ((KeyAction) -> Unit)? = null
     var onInputMethodSwitchRequested: (() -> Unit)? = null
     var onSettingsRequested: (() -> Unit)? = null
+    var onThemeSelected: ((app.funput.funput.theme.KeyboardThemeId) -> Unit)? = null
     var onEmojiPanelOpened: (() -> Unit)? = null
     var onPanelChanging: ((KeyboardPanel) -> Unit)? = null
     var onPlacementEditorRequested: (() -> Unit)? = null
@@ -23,6 +25,7 @@ class FunputKeyboardCallbacks {
     var onClipboardPasteRequested: (() -> Unit)? = null
     var onClipboardPanelOpened: (() -> Unit)? = null
     var onClipboardEntrySelected: ((KeyboardClipboardEntry) -> Unit)? = null
+    var onShortcutEntrySelected: ((KeyboardShortcutEntry) -> Unit)? = null
     var onClipboardPinToggled: ((KeyboardClipboardEntry) -> Unit)? = null
     var onClipboardEntryRemoved: ((KeyboardClipboardEntry) -> Unit)? = null
     var onClipboardClearRequested: (() -> Unit)? = null
@@ -45,6 +48,9 @@ class FunputKeyboardCallbacks {
     }
 
     internal fun dispatchSettingsRequest() { onSettingsRequested?.invoke() }
+    internal fun dispatchThemeSelected(themeId: app.funput.funput.theme.KeyboardThemeId) {
+        onThemeSelected?.invoke(themeId)
+    }
 
     internal fun dispatchEmojiPanelOpened() {
         onEmojiPanelOpened?.invoke()
@@ -66,6 +72,7 @@ class FunputKeyboardCallbacks {
 
     internal fun dispatchClipboardPanelOpened() { onClipboardPanelOpened?.invoke() }
     internal fun dispatchClipboardEntry(entry: KeyboardClipboardEntry) { onClipboardEntrySelected?.invoke(entry) }
+    internal fun dispatchShortcutEntry(entry: KeyboardShortcutEntry) { onShortcutEntrySelected?.invoke(entry) }
     internal fun dispatchClipboardPin(entry: KeyboardClipboardEntry) { onClipboardPinToggled?.invoke(entry) }
     internal fun dispatchClipboardRemove(entry: KeyboardClipboardEntry) { onClipboardEntryRemoved?.invoke(entry) }
     internal fun dispatchClipboardClear() { onClipboardClearRequested?.invoke() }

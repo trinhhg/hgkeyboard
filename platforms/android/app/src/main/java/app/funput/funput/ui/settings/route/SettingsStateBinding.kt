@@ -46,6 +46,7 @@ internal fun rememberSettingsScreenState(
         keyboardTheme = keyboardTheme,
         inputMethod = settings.inputMethod,
         showsNumberRow = settings.showsNumberRow,
+        keyboardStyle = settings.keyboardStyle,
         toneStyle = settings.toneStyle,
         keySizeProfile = settings.keySizeProfile,
         placement = settings.placement,
@@ -68,6 +69,16 @@ internal fun rememberSettingsScreenState(
         },
         onShowsNumberRowChanged = { enabled ->
             scope.launch { settings.numberRowStore.setShowsNumberRow(enabled) }
+        },
+        onStylePresetSelected = { preset ->
+            val isDark = settings.appearanceMode == app.funput.funput.ime.settings.AppearanceMode.DARK
+            scope.launch { settings.styleStore.applyPreset(preset, isDark) }
+        },
+        onSecondarySymbolsChanged = { enabled ->
+            scope.launch { settings.styleStore.setSecondarySymbols(enabled) }
+        },
+        onBottomEmojiKeyChanged = { enabled ->
+            scope.launch { settings.styleStore.setBottomEmojiKey(enabled) }
         },
         onOpenAppearance = onOpenAppearance,
         speechAvailable = LocalResources.current.getBoolean(app.funput.funput.ime.R.bool.speech_feature_available),

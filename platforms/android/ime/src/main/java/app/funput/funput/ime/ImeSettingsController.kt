@@ -7,6 +7,8 @@ import app.funput.funput.ime.settings.InputMethodSettings
 import app.funput.funput.ime.settings.KeyboardFeedbackPreferences
 import app.funput.funput.ime.settings.KeyboardFeedbackSettings
 import app.funput.funput.ime.settings.KeyboardSizingSettings
+import app.funput.funput.ime.settings.KeyboardStylePreferences
+import app.funput.funput.ime.settings.KeyboardStyleSettings
 import app.funput.funput.ime.settings.KeyboardThemeSelection
 import app.funput.funput.ime.settings.KeyboardThemeSettings
 import app.funput.funput.ime.settings.NumberRowSettings
@@ -41,6 +43,8 @@ internal class ImeSettingsController(
     var feedback = KeyboardFeedbackPreferences.Default
         private set
     var showsNumberRow = NumberRowSettings.DefaultShowsNumberRow
+        private set
+    var stylePreferences = KeyboardStylePreferences.Default
         private set
     var toolbarArrangement = ToolbarArrangement.Default
         private set
@@ -79,6 +83,7 @@ internal class ImeSettingsController(
         KeyboardThemeSettings(context).selection.collectIn(scope, ::applyThemeSelection)
         KeyboardFeedbackSettings(context).preferences.collectIn(scope, ::applyFeedback)
         NumberRowSettings(context).showsNumberRow.collectIn(scope, ::applyShowsNumberRow)
+        KeyboardStyleSettings(context).preferences.collectIn(scope, ::applyStylePreferences)
         ToolbarLayoutSettings(context).preferences.collectIn(scope) { prefs ->
             val next = prefs.toArrangement()
             if (next != toolbarArrangement) { toolbarArrangement = next; onViewSettingsChanged() }
@@ -135,6 +140,11 @@ internal class ImeSettingsController(
     private fun applyShowsNumberRow(value: Boolean) {
         if (value == showsNumberRow) return
         showsNumberRow = value; onViewSettingsChanged()
+    }
+
+    private fun applyStylePreferences(value: KeyboardStylePreferences) {
+        if (value == stylePreferences) return
+        stylePreferences = value; onViewSettingsChanged()
     }
 
     private fun applySmartGestures(value: Boolean) {

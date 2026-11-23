@@ -25,6 +25,7 @@ import app.funput.funput.keyboard.model.KeyboardInputMethod
 import app.funput.funput.keyboard.model.SuggestionSelection
 import app.funput.funput.keyboard.suggestion.SuggestionChipKind
 import app.funput.funput.keyboard.ui.FunputKeyboardView
+import app.funput.funput.keyboard.ui.clipboard.KeyboardShortcutEntry
 
 /**
  * Wires input collaborators together, leaving lifecycle and framework callbacks to the service.
@@ -35,7 +36,7 @@ internal class ImeEditingSession(
     val typo: TypoCorrectionParts,
     private val composition: AndroidCompositionSession,
     private val bar: SuggestionBarState,
-    connection: () -> InputConnection?,
+    private val connection: () -> InputConnection?,
     val editorRuntime: ImeEditorRuntime,
     val actionHandler: ImeKeyActionHandler,
     val suggestionService: PersonalSuggestionService,
@@ -117,9 +118,28 @@ internal class ImeEditingSession(
         clipboard.stop()
     }
 
+    private var shortcutEntries: List<KeyboardShortcutEntry> = emptyList()
+
+    fun updateShortcuts(entries: List<KeyboardShortcutEntry>, view: FunputKeyboardView?) {
+        shortcutEntries = entries
+        view?.shortcutEntries = entries
+    }
+
+    fun insertShortcutText(text: String) {
+        actionHandler.finish()
+        connection()?.commitText(text, 1)
+        suggestionService.consume(actionHandler.takeSuggestionUpdate())
+        refreshBars()
+    }
+
     fun bindPanels(view: FunputKeyboardView) {
         clipboard.attach(view)
         localText.attach(view)
+        view.shortcutEntries = shortcutEntries
+        view.callbacks.onShortcutEntrySelected = { entry ->
+            insertShortcutText(entry.expansion)
+            view.showLettersPanel()
+        }
     }
 
     fun restartComposition(method: KeyboardInputMethod, view: FunputKeyboardView?) {

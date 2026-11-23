@@ -5,6 +5,7 @@ import app.funput.funput.keyboard.model.KeyboardEditorMode
 import app.funput.funput.keyboard.ui.KeyboardPanel
 import app.funput.funput.keyboard.ui.clipboard.ClipboardPanelView
 import app.funput.funput.keyboard.ui.clipboard.KeyboardClipboardEntry
+import app.funput.funput.keyboard.ui.clipboard.KeyboardShortcutEntry
 
 internal class KeyboardClipboardPanelState(
     private val surface: KeyboardSurfaceView,
@@ -23,10 +24,13 @@ internal class KeyboardClipboardPanelState(
         set(value) { field = value; syncPanel() }
     var loading: Boolean = false
         set(value) { field = value; syncPanel() }
+    var shortcuts: List<KeyboardShortcutEntry> = emptyList()
+        set(value) { field = value; syncShortcuts() }
 
     fun attach(value: ClipboardPanelView) {
         panel = value
         syncPanel()
+        syncShortcuts()
     }
 
     fun editorModeChanged() = syncAvailability()
@@ -35,4 +39,5 @@ internal class KeyboardClipboardPanelState(
 
     private fun syncAvailability() { surface.clipboardKeyVisible = available() }
     private fun syncPanel() { panel?.submit(entries, loading) }
+    private fun syncShortcuts() { panel?.submitShortcuts(shortcuts) }
 }

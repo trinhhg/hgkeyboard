@@ -22,10 +22,19 @@ internal object CompactDigitAlternates {
     private const val Row3Characters = "zxcvbnm"
     private const val Row3Symbols = "_đ\"':;/"
 
-    fun decorate(layout: KeyboardLayout, decorateDigitsRow: Boolean = true): KeyboardLayout =
-        layout.copy(rows = layout.rows.map { decorate(it, decorateDigitsRow) })
+    fun decorate(
+        layout: KeyboardLayout,
+        decorateDigitsRow: Boolean = true,
+        decorateSymbolRows: Boolean = true,
+    ): KeyboardLayout = layout.copy(
+        rows = layout.rows.map { decorate(it, decorateDigitsRow, decorateSymbolRows) },
+    )
 
-    private fun decorate(row: KeyboardRow, decorateDigitsRow: Boolean): KeyboardRow {
+    private fun decorate(
+        row: KeyboardRow,
+        decorateDigitsRow: Boolean,
+        decorateSymbolRows: Boolean,
+    ): KeyboardRow {
         val letterLabels = row.keys
             .filter { it.role == KeyRole.CHARACTER }
             .map { it.label }
@@ -40,9 +49,14 @@ internal object CompactDigitAlternates {
                 }
             }
             Row2Characters -> {
-                row.copy(keys = row.keys.mapIndexed { index, key -> apply(Row2Symbols[index], key, "ký tự") })
+                if (decorateSymbolRows) {
+                    row.copy(keys = row.keys.mapIndexed { index, key -> apply(Row2Symbols[index], key, "ký tự") })
+                } else {
+                    row
+                }
             }
             Row3Characters -> {
+                if (!decorateSymbolRows) return row
                 row.copy(keys = row.keys.map { key ->
                     val idx = Row3Characters.indexOf(key.label.firstOrNull() ?: ' ')
                     if (idx >= 0 && idx < Row3Symbols.length) {

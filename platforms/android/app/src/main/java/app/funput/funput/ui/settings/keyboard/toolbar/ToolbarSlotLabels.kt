@@ -10,6 +10,8 @@ internal object ToolbarSlotLabels {
     @StringRes
     fun title(slot: ToolbarSlot): Int = when (slot) {
         ToolbarSlot.MICROPHONE -> R.string.settings_toolbar_slot_microphone
+        ToolbarSlot.THEME -> R.string.settings_toolbar_slot_theme
+        ToolbarSlot.SETTINGS -> R.string.settings_toolbar_slot_settings
         ToolbarSlot.PLACEMENT -> R.string.settings_keyboard_mode_title
         ToolbarSlot.CLIPBOARD -> R.string.settings_toolbar_slot_clipboard
         ToolbarSlot.EMOJI -> R.string.settings_toolbar_slot_emoji
@@ -17,6 +19,8 @@ internal object ToolbarSlotLabels {
 
     fun icon(slot: ToolbarSlot): Int = when (slot) {
         ToolbarSlot.MICROPHONE -> FunputIcons.Microphone
+        ToolbarSlot.THEME -> FunputIcons.Appearance
+        ToolbarSlot.SETTINGS -> FunputIcons.KeySize
         ToolbarSlot.PLACEMENT -> FunputIcons.Placement
         ToolbarSlot.CLIPBOARD -> FunputIcons.Clipboard
         ToolbarSlot.EMOJI -> FunputIcons.Suggestions

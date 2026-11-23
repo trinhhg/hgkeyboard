@@ -17,6 +17,8 @@ internal fun KeyboardLayout.resolveGeometry(
     showPlacement: Boolean = true,
     microphone: KeyboardMicrophoneState = KeyboardMicrophoneState(),
     arrangement: ToolbarArrangement = ToolbarArrangement.Default,
+    showUtilities: Boolean = true,
+    hasSuggestions: Boolean = false,
 ): ResolvedKeyboard? {
     if (width <= 0 || height <= 0) return null
     return KeyboardGeometry.resolve(
@@ -28,5 +30,7 @@ internal fun KeyboardLayout.resolveGeometry(
         showPlacement = showPlacement,
         microphone = microphone,
         arrangement = arrangement,
+        showUtilities = showUtilities,
+        hasSuggestions = hasSuggestions,
     )
 }

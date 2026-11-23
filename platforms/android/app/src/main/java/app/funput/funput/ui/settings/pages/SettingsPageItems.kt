@@ -41,9 +41,13 @@ internal fun LazyListScope.settingsPageItems(
                 LayoutSection(
                     inputMethod = state.inputMethod,
                     showsNumberRow = state.showsNumberRow,
+                    keyboardStyle = state.keyboardStyle,
                     keySizeProfile = state.keySizeProfile,
                     placement = state.placement,
                     onShowsNumberRowChanged = state.onShowsNumberRowChanged,
+                    onStylePresetSelected = state.onStylePresetSelected,
+                    onSecondarySymbolsChanged = state.onSecondarySymbolsChanged,
+                    onBottomEmojiKeyChanged = state.onBottomEmojiKeyChanged,
                     onKeySizeSelected = state.onKeySizeSelected,
                     onOpenPlacement = { onOpenPicker(SettingsPicker.KEYBOARD_PLACEMENT) },
                     onElevationSelected = state.onElevationSelected,

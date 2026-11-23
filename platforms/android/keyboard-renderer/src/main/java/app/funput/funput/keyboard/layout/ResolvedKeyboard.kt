@@ -41,6 +41,9 @@ data class ResolvedSuggestionBar(
     val emojiKey: ResolvedKey,
     val suggestionsEnabled: Boolean,
     val microphoneKey: ResolvedKey? = null,
+    val themeKey: ResolvedKey? = null,
+    val settingsKey: ResolvedKey? = null,
+    val toolbarToggleKey: ResolvedKey? = null,
 )
 
 data class ResolvedKeyboard(
@@ -54,7 +57,10 @@ data class ResolvedKeyboard(
 ) {
     val keys: List<ResolvedKey> = buildList {
         // Left to right, matching the toolbar and the accessibility traversal order.
+        suggestionBar?.toolbarToggleKey?.let(::add)
         suggestionBar?.microphoneKey?.let(::add)
+        suggestionBar?.themeKey?.let(::add)
+        suggestionBar?.settingsKey?.let(::add)
         suggestionBar?.placementKey?.let(::add)
         suggestionBar?.systemInputMethodKey?.let(::add)
         suggestionBar?.clipboardKey?.let(::add)

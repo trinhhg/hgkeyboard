@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,11 +27,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.funput.funput.keyboard.ui.R
@@ -40,9 +43,11 @@ import java.time.Instant
 
 @Composable
 internal fun ClipboardPanelContent(
-    entries: List<KeyboardClipboardEntry>, loading: Boolean, now: Instant,
+    entries: List<KeyboardClipboardEntry>, shortcuts: List<KeyboardShortcutEntry>,
+    loading: Boolean, now: Instant,
     palette: KeyboardPanelPalette, reset: Int,
-    onSelect: (KeyboardClipboardEntry) -> Unit, onPin: (KeyboardClipboardEntry) -> Unit,
+    onSelect: (KeyboardClipboardEntry) -> Unit, onSelectShortcut: (KeyboardShortcutEntry) -> Unit,
+    onPin: (KeyboardClipboardEntry) -> Unit,
     onRemove: (KeyboardClipboardEntry) -> Unit, onClear: () -> Unit,
     onDelete: () -> Unit, onReturn: () -> Unit,
 ) {
@@ -67,8 +72,89 @@ internal fun ClipboardPanelContent(
 
         Box(Modifier.weight(1f)) {
             when (currentTab) {
-                0 -> Empty("Ghi chú", "Chưa có ghi chú nào. Ghi chú cá nhân sẽ hiển thị tại đây.", palette)
-                2 -> Empty("Gõ tắt", "Chưa có phím gõ tắt nào. Bạn có thể cài đặt thêm trong Cài đặt Hg.", palette)
+                0 -> {
+                    val pinnedEntries = entries.filter { it.isPinned }
+                    if (pinnedEntries.isEmpty()) {
+                        Empty(
+                            "Chưa có ghi chú đã ghim",
+                            "Ghim một mục trong Bảng nhớ tạm để lưu làm ghi chú dùng nhanh.",
+                            palette,
+                        )
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize().padding(horizontal = 4.dp, vertical = 4.dp),
+                        ) {
+                            items(pinnedEntries.size, key = { pinnedEntries[it].id }) { index ->
+                                val entry = pinnedEntries[index]
+                                ClipboardSwipeRow(
+                                    entry, now, palette, revealedId == entry.id,
+                                    onReveal = { reveal ->
+                                        revealedId = if (reveal) entry.id else revealedId.takeUnless { it == entry.id }
+                                    },
+                                    onSelect = { if (revealedId == null) onSelect(entry) else revealedId = null },
+                                    onPin = { onPin(entry) }, onRemove = { onRemove(entry) },
+                                    onPreview = {
+                                        if (revealedId == null) preview = entry else revealedId = null
+                                    },
+                                )
+                            }
+                        }
+                    }
+                }
+                2 -> {
+                    if (shortcuts.isEmpty()) {
+                        Empty(
+                            "Gõ tắt",
+                            "Chưa có phím gõ tắt nào. Bạn có thể cài đặt thêm trong Cài đặt Hg.",
+                            palette,
+                        )
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp, vertical = 6.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp),
+                        ) {
+                            items(shortcuts.size, key = { shortcuts[it].trigger }) { index ->
+                                val item = shortcuts[index]
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(Color(palette.searchSurface))
+                                        .clickable { onSelectShortcut(item) }
+                                        .padding(horizontal = 12.dp, vertical = 10.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                ) {
+                                    BasicText(
+                                        text = item.trigger,
+                                        modifier = Modifier
+                                            .widthIn(min = 48.dp, max = 110.dp)
+                                            .clip(RoundedCornerShape(5.dp))
+                                            .background(Color(palette.accent).copy(alpha = 0.14f))
+                                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                                        style = TextStyle(
+                                            color = Color(palette.accent),
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.Bold,
+                                        ),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                    )
+                                    BasicText(
+                                        text = item.expansion,
+                                        modifier = Modifier.weight(1f),
+                                        style = TextStyle(
+                                            color = Color(palette.readable(palette.label)),
+                                            fontSize = 14.sp,
+                                        ),
+                                        maxLines = 2,
+                                        overflow = TextOverflow.Ellipsis,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
                 else -> {
                     when {
                         loading -> Empty(stringResource(R.string.clipboard_loading), null, palette)

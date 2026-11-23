@@ -19,7 +19,7 @@ internal object ToolbarMetrics {
      * padding. The utility keys still take the full band and widen into their neighbours'
      * slack (see [KeyboardHitTargetResolver]), so the shorter band costs no tap area.
      */
-    const val SuggestionBarHeightDp = 34f
+    const val SuggestionBarHeightDp = 44f
 
     /** Separates the band from the first key row. */
     const val SuggestionBarGapDp = 4f

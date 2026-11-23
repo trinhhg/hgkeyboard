@@ -14,6 +14,7 @@ internal class KeyboardSurfaceGeometry(
     private val layout: () -> KeyboardLayout,
     private val profile: () -> KeyboardSizingProfile,
     private val utilitiesVisible: () -> Boolean,
+    private val hasSuggestions: () -> Boolean = { false },
     private val microphoneAllowed: () -> Boolean,
     private val changed: () -> Unit,
 ) {
@@ -48,15 +49,18 @@ internal class KeyboardSurfaceGeometry(
         }
 
     fun resolve() {
+        val showingUtilities = utilitiesVisible()
         keyboard = layout().resolveGeometry(
             width = host.width,
             height = host.height,
             density = host.resources.displayMetrics.density,
             profile = profile(),
-            showClipboard = clipboardKeyVisible && utilitiesVisible(),
-            showPlacement = placementKeyVisible && utilitiesVisible(),
+            showClipboard = clipboardKeyVisible && showingUtilities,
+            showPlacement = placementKeyVisible && showingUtilities,
             microphone = microphone.copy(visible = microphone.visible && microphoneAllowed()),
             arrangement = arrangement,
+            showUtilities = showingUtilities,
+            hasSuggestions = hasSuggestions(),
         )
         changed()
     }

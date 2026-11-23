@@ -27,6 +27,9 @@ internal class KeyboardUtilityActionRouter(
             )
             key?.role == KeyRole.MICROPHONE -> utilities.dispatch(KeyboardUtilityAction.MICROPHONE)
             key?.role == KeyRole.EMOJI -> utilities.dispatch(KeyboardUtilityAction.EMOJI)
+            key?.role == KeyRole.THEME -> utilities.dispatch(KeyboardUtilityAction.THEME)
+            key?.role == KeyRole.SETTINGS -> utilities.dispatch(KeyboardUtilityAction.SETTINGS)
+            key?.role == KeyRole.TOOLBAR_TOGGLE -> utilities.dispatch(KeyboardUtilityAction.TOOLBAR_TOGGLE)
             keyId != null -> onKeyboardKey(keyId)
         }
     }

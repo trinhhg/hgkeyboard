@@ -15,6 +15,9 @@ enum class KeyRole {
     CLIPBOARD,
     EMOJI,
     MICROPHONE,
+    THEME,
+    SETTINGS,
+    TOOLBAR_TOGGLE,
     SPACE,
     ENTER,
 }

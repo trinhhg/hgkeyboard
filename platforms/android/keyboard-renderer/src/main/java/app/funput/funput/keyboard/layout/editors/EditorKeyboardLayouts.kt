@@ -14,6 +14,7 @@ import app.funput.funput.keyboard.model.KeySpec
 import app.funput.funput.keyboard.model.KeyboardEditorMode
 import app.funput.funput.keyboard.model.KeyboardInputMethod
 import app.funput.funput.keyboard.model.KeyboardLayout
+import app.funput.funput.keyboard.model.KeyboardStyleOptions
 
 internal object EditorKeyboardLayouts {
     fun resolve(
@@ -21,13 +22,14 @@ internal object EditorKeyboardLayouts {
         editorMode: KeyboardEditorMode,
         suggestionsEnabled: Boolean,
         showsNumberRow: Boolean = true,
+        styleOptions: KeyboardStyleOptions = KeyboardStyleOptions.Default,
     ): KeyboardLayout {
         val layout = when (editorMode) {
-            KeyboardEditorMode.TEXT -> KeyboardLayouts.forInputMethod(inputMethod, showsNumberRow)
+            KeyboardEditorMode.TEXT -> KeyboardLayouts.forInputMethod(inputMethod, showsNumberRow, styleOptions)
             KeyboardEditorMode.SEARCH,
             KeyboardEditorMode.EMAIL,
             KeyboardEditorMode.URL,
-            -> webLayout(editorMode, inputMethod, showsNumberRow)
+            -> webLayout(editorMode, inputMethod, showsNumberRow, styleOptions)
             KeyboardEditorMode.PHONE -> PhoneKeyboardLayouts.resolve(inputMethod, suggestionsEnabled)
             KeyboardEditorMode.PASSWORD -> PasswordKeyboardLayouts.text(inputMethod)
             KeyboardEditorMode.PIN -> PasswordKeyboardLayouts.pin(inputMethod)
@@ -60,6 +62,7 @@ internal object EditorKeyboardLayouts {
         editorMode: KeyboardEditorMode,
         inputMethod: KeyboardInputMethod,
         showsNumberRow: Boolean,
+        styleOptions: KeyboardStyleOptions,
     ): KeyboardLayout {
         val composesVietnamese = editorMode.supportsVietnameseComposition
         val pageId = "${editorMode.name.lowercase()}-${inputMethod.name.lowercase()}"
@@ -76,7 +79,11 @@ internal object EditorKeyboardLayouts {
             supportsVietnameseAlternates = composesVietnamese,
             showsTelexHints = composesVietnamese && inputMethod.isTelexFamily,
         )
-        return if (isCompact) CompactDigitAlternates.decorate(layout) else layout
+        return CompactDigitAlternates.decorate(
+            layout = layout,
+            decorateDigitsRow = isCompact,
+            decorateSymbolRows = styleOptions.showSecondarySymbols,
+        )
     }
 
     /**

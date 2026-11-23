@@ -9,6 +9,7 @@ import app.funput.funput.keyboard.ui.EmojiPanelView
 import app.funput.funput.keyboard.ui.KeyboardPanel
 import app.funput.funput.keyboard.ui.KeyboardPanelController
 import app.funput.funput.keyboard.ui.clipboard.ClipboardPanelView
+import app.funput.funput.keyboard.ui.theme.ThemePanelView
 import app.funput.funput.theme.KeyboardTheme
 
 /** Owns panel presentation while the public keyboard view remains the host API. */
@@ -19,6 +20,7 @@ internal class KeyboardPanelCoordinator(
     private val onSpeechAction: (SpeechPanelAction) -> Unit,
     private val clearSpeech: () -> Unit,
     private val createClipboardPanel: () -> ClipboardPanelView,
+    private val createThemePanel: () -> ThemePanelView = { ThemePanelView(keyboardSurface.context) },
     private val attachPanel: (View) -> Unit,
     private val onPanelChanging: (KeyboardPanel) -> Unit = {},
     private val onPanelChanged: (KeyboardPanel) -> Unit,
@@ -28,6 +30,7 @@ internal class KeyboardPanelCoordinator(
     private var speechPanel: SpeechPanelView? = null
     private var emojiPanel: EmojiPanelView? = null
     private var clipboardPanel: ClipboardPanelView? = null
+    private var themePanel: ThemePanelView? = null
 
     val activePanel: KeyboardPanel get() = state.activePanel
     val loadedEmojiPanel: EmojiPanelView? get() = emojiPanel
@@ -42,6 +45,7 @@ internal class KeyboardPanelCoordinator(
         }
         hideEmojiPanel()
         hideClipboardPanel()
+        hideThemePanel()
         keyboardSurface.visibility = View.GONE
         panel.visibility = View.VISIBLE
         syncSuggestions()
@@ -56,6 +60,7 @@ internal class KeyboardPanelCoordinator(
             attachPanel(it)
         }
         hideClipboardPanel()
+        hideThemePanel()
         val speechClosed = hideSpeechPanel()
         keyboardSurface.visibility = View.GONE
         panel.visibility = View.VISIBLE
@@ -70,6 +75,7 @@ internal class KeyboardPanelCoordinator(
             attachPanel(it)
         }
         hideEmojiPanel()
+        hideThemePanel()
         val speechClosed = hideSpeechPanel()
         keyboardSurface.visibility = View.GONE
         panel.visibility = View.VISIBLE
@@ -77,11 +83,28 @@ internal class KeyboardPanelCoordinator(
         notifyChanged(KeyboardPanel.CLIPBOARD, speechClosed)
     }
 
+    fun showTheme() {
+        if (activePanel != KeyboardPanel.THEME) onPanelChanging(KeyboardPanel.THEME)
+        if (!state.show(KeyboardPanel.THEME)) return
+        val panel = themePanel ?: createThemePanel().also {
+            themePanel = it
+            attachPanel(it)
+        }
+        hideEmojiPanel()
+        hideClipboardPanel()
+        val speechClosed = hideSpeechPanel()
+        keyboardSurface.visibility = View.GONE
+        panel.visibility = View.VISIBLE
+        syncSuggestions()
+        notifyChanged(KeyboardPanel.THEME, speechClosed)
+    }
+
     fun showSymbols(mode: KeyboardLayoutMode) {
         onPanelChanging(KeyboardPanel.SYMBOLS)
         state.showSymbols(mode)
         hideEmojiPanel()
         hideClipboardPanel()
+        hideThemePanel()
         val speechClosed = hideSpeechPanel()
         keyboardSurface.layoutMode = mode
         keyboardSurface.visibility = View.VISIBLE
@@ -94,6 +117,7 @@ internal class KeyboardPanelCoordinator(
         if (!state.show(KeyboardPanel.LETTERS)) return
         hideEmojiPanel()
         hideClipboardPanel()
+        hideThemePanel()
         val speechClosed = hideSpeechPanel()
         keyboardSurface.layoutMode = KeyboardLayoutMode.LETTERS
         keyboardSurface.visibility = View.VISIBLE
@@ -105,6 +129,7 @@ internal class KeyboardPanelCoordinator(
         emojiPanel?.updateTheme(theme)
         clipboardPanel?.updateTheme(theme)
         speechPanel?.updateTheme(theme)
+        themePanel?.updateTheme(theme)
     }
 
     private fun hideSpeechPanel(): Boolean {
@@ -126,5 +151,9 @@ internal class KeyboardPanelCoordinator(
 
     private fun hideClipboardPanel() {
         clipboardPanel?.let { it.visibility = View.GONE; it.reset() }
+    }
+
+    private fun hideThemePanel() {
+        themePanel?.visibility = View.GONE
     }
 }

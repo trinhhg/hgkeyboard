@@ -26,8 +26,15 @@
     <string name="settings_toolbar_move_up">Lên</string>
     <string name="settings_toolbar_move_down">Xuống</string>
     <string name="settings_toolbar_slot_microphone">Micro</string>
+    <string name="settings_toolbar_slot_theme">Giao diện nhanh</string>
+    <string name="settings_toolbar_slot_settings">Cài đặt Hg</string>
     <string name="settings_toolbar_slot_clipboard">Clipboard</string>
     <string name="settings_toolbar_slot_emoji">Biểu tượng cảm xúc</string>
+    <string name="settings_style_preset_title">Phong cách bàn phím</string>
+    <string name="settings_secondary_symbols_title">Ký tự phụ ở góc phím</string>
+    <string name="settings_secondary_symbols_summary">Hiển thị ký tự phụ (@, #, &amp;, *, …) ở góc trên phím chữ theo kiểu SwiftKey.</string>
+    <string name="settings_bottom_emoji_title">Phím Emoji ở hàng dưới cùng</string>
+    <string name="settings_bottom_emoji_summary">Hiển thị nút biểu tượng cảm xúc ngay cạnh phím 123 ở hàng dưới cùng.</string>
     <string name="settings_key_size_title">Kích thước phím</string>
     <string name="settings_keyboard_mode_title">Chế độ bàn phím</string>
     <string name="keyboard_mode_standard">Thường</string>

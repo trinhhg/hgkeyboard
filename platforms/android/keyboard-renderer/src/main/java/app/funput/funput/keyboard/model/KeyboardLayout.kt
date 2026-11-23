@@ -55,6 +55,9 @@ data class SuggestionBarSpec(
     val systemInputMethodKey: KeySpec? = null,
     val suggestionsEnabled: Boolean = true,
     val microphoneKey: KeySpec? = null,
+    val themeKey: KeySpec? = null,
+    val settingsKey: KeySpec? = null,
+    val toolbarToggleKey: KeySpec? = null,
 ) {
     init {
         require(microphoneKey == null || microphoneKey.role == KeyRole.MICROPHONE) {
@@ -67,6 +70,15 @@ data class SuggestionBarSpec(
         }
         require(systemInputMethodKey == null || systemInputMethodKey.role == KeyRole.SYSTEM_INPUT_METHOD) {
             "Toolbar input-method action must be a system input-method key"
+        }
+        require(themeKey == null || themeKey.role == KeyRole.THEME) {
+            "Toolbar theme action must be a theme key"
+        }
+        require(settingsKey == null || settingsKey.role == KeyRole.SETTINGS) {
+            "Toolbar settings action must be a settings key"
+        }
+        require(toolbarToggleKey == null || toolbarToggleKey.role == KeyRole.TOOLBAR_TOGGLE) {
+            "Toolbar toggle action must be a toggle key"
         }
     }
 }
@@ -82,8 +94,11 @@ data class KeyboardLayout(
         require(rows.isNotEmpty()) { "Keyboard layout must contain at least one row" }
 
         val keyIds = buildList {
+            suggestionBar?.toolbarToggleKey?.let { add(it.id) }
             suggestionBar?.clipboardKey?.let { add(it.id) }
             suggestionBar?.microphoneKey?.let { add(it.id) }
+            suggestionBar?.themeKey?.let { add(it.id) }
+            suggestionBar?.settingsKey?.let { add(it.id) }
             suggestionBar?.emojiKey?.let { add(it.id) }
             suggestionBar?.placementKey?.let { add(it.id) }
             suggestionBar?.systemInputMethodKey?.let { add(it.id) }

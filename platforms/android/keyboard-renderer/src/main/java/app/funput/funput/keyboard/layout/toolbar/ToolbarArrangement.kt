@@ -25,10 +25,10 @@ data class ToolbarArrangement(
     }
 
     companion object {
-        /** Matches today's fixed toolbar: mic and placement on the left, emoji outermost right. */
+        /** Laban/SwiftKey 6-icon utility toolbar: Mic, Theme, Settings on left; Clipboard, Placement, Emoji on right. */
         val Default = ToolbarArrangement(
-            leading = listOf(ToolbarSlot.MICROPHONE, ToolbarSlot.PLACEMENT),
-            trailing = listOf(ToolbarSlot.CLIPBOARD, ToolbarSlot.EMOJI),
+            leading = listOf(ToolbarSlot.MICROPHONE, ToolbarSlot.THEME, ToolbarSlot.SETTINGS),
+            trailing = listOf(ToolbarSlot.CLIPBOARD, ToolbarSlot.PLACEMENT, ToolbarSlot.EMOJI),
         )
     }
 }

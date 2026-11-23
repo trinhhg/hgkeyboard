@@ -42,6 +42,7 @@ class KeyboardSurfaceView @JvmOverloads constructor(
         layout = { layoutState.layout },
         profile = { sizingProfile },
         utilitiesVisible = { suggestionState.utilityKeysVisible },
+        hasSuggestions = { suggestionState.hasSuggestions },
         microphoneAllowed = { editorMode in listOf(KeyboardEditorMode.TEXT, KeyboardEditorMode.SEARCH, KeyboardEditorMode.URL) },
         changed = {
             suggestionState.geometryChanged()
@@ -52,6 +53,7 @@ class KeyboardSurfaceView @JvmOverloads constructor(
     var layoutMode: KeyboardLayoutMode by layoutState::layoutMode
     var editorMode: KeyboardEditorMode by layoutState::editorMode
     var layoutOverride: app.funput.funput.keyboard.model.KeyboardLayout? by layoutState::layoutOverride
+    var styleOptions: app.funput.funput.keyboard.model.KeyboardStyleOptions by layoutState::styleOptions
     var suggestionBarEnabled: Boolean by layoutState::suggestionsEnabled
     var systemInputMethodSwitcherVisible: Boolean by layoutState::systemInputMethodSwitcherVisible
     var clipboardKeyVisible: Boolean by geometry::clipboardKeyVisible
@@ -73,7 +75,9 @@ class KeyboardSurfaceView @JvmOverloads constructor(
     var enterAction by render::enterAction
     var breaksLineOnEnterHold: Boolean get() = interaction.breaksLineOnEnterHold; set(value) { if (value != interaction.breaksLineOnEnterHold) { interaction.breaksLineOnEnterHold = value; accessibility.refresh() } }
     var keyPreviewsEnabled: Boolean by render::keyPreviewsEnabled
-    val callbacks = KeyboardCallbacks()
+    val callbacks = KeyboardCallbacks().apply {
+        onToolbarToggleRequested = { suggestionState.toggleToolbar() }
+    }
     var shiftState: ShiftState
         get() = interaction.shiftState
         set(value) = interaction.setShiftState(value)

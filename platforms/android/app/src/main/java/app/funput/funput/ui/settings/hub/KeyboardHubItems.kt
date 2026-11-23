@@ -29,6 +29,7 @@ internal fun LazyListScope.keyboardHubItems(
             inputMethod = state.inputMethod,
             sizingProfile = state.keySizeProfile,
             showsNumberRow = state.showsNumberRow,
+            styleOptions = state.keyboardStyle.toLayoutOptions(),
             onOpenAppearance = state.onOpenAppearance,
             modifier = Modifier.testTag(SettingsHeroTag),
         )

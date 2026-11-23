@@ -37,8 +37,8 @@ internal object KeyboardHitTargetResolver {
     ): ResolvedSuggestionBar {
         // Neighbours follow on-screen left-to-right order, not a fixed role list.
         val controls = listOfNotNull(
-            bar.microphoneKey, bar.placementKey, bar.systemInputMethodKey,
-            bar.clipboardKey, bar.emojiKey,
+            bar.toolbarToggleKey, bar.microphoneKey, bar.themeKey, bar.settingsKey,
+            bar.placementKey, bar.systemInputMethodKey, bar.clipboardKey, bar.emojiKey,
         ).sortedBy { it.bounds.left }
         val hitBottom = midpoint(bar.bounds.bottom, keyboard.rows.first().first().bounds.top)
         val spans = (
@@ -66,10 +66,13 @@ internal object KeyboardHitTargetResolver {
                 right = suggestionEdges.second,
                 bottom = hitBottom,
             ),
+            toolbarToggleKey = lookup(bar.toolbarToggleKey),
             systemInputMethodKey = lookup(bar.systemInputMethodKey),
             clipboardKey = lookup(bar.clipboardKey),
             placementKey = lookup(bar.placementKey),
             microphoneKey = lookup(bar.microphoneKey),
+            themeKey = lookup(bar.themeKey),
+            settingsKey = lookup(bar.settingsKey),
             emojiKey = requireNotNull(lookup(bar.emojiKey)),
         )
     }

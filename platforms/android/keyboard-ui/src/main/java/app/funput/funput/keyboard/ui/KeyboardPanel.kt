@@ -7,4 +7,5 @@ enum class KeyboardPanel {
     EMOJI,
     CLIPBOARD,
     SPEECH,
+    THEME,
 }

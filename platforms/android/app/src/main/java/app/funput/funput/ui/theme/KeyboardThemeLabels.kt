@@ -10,8 +10,10 @@ import app.funput.funput.theme.KeyboardThemeId
 internal fun KeyboardThemeDescriptor.localizedName(): String = when (id) {
     KeyboardThemeId.Dark -> stringResource(R.string.settings_keyboard_theme_dark)
     KeyboardThemeId.Light -> stringResource(R.string.settings_keyboard_theme_light)
-    KeyboardThemeId.Laban -> "Laban Key"
-    KeyboardThemeId.SwiftKey -> "SwiftKey"
+    KeyboardThemeId.Laban -> "Laban Key (Sáng)"
+    KeyboardThemeId.LabanDark -> "Laban Key (Tối)"
+    KeyboardThemeId.SwiftKey -> "SwiftKey (Sáng)"
+    KeyboardThemeId.SwiftKeyDark -> "SwiftKey (Tối)"
     KeyboardThemeId.LiquidGlass -> "Liquid Glass"
     else -> name
 }

@@ -5,6 +5,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import app.funput.funput.R
+import app.funput.funput.ime.settings.KeyboardStylePreferences
+import app.funput.funput.ime.settings.KeyboardStylePreset
 import app.funput.funput.keyboard.layout.KeyboardSizingProfile
 import app.funput.funput.keyboard.model.KeyboardInputMethod
 import app.funput.funput.keyboard.placement.KeyboardPlacementMode
@@ -29,9 +31,13 @@ import app.funput.funput.ui.settings.sectionTitle
 internal fun LayoutSection(
     inputMethod: KeyboardInputMethod,
     showsNumberRow: Boolean,
+    keyboardStyle: KeyboardStylePreferences = KeyboardStylePreferences.Default,
     keySizeProfile: KeyboardSizingProfile,
     placement: KeyboardPlacementPreferences,
     onShowsNumberRowChanged: (Boolean) -> Unit,
+    onStylePresetSelected: (KeyboardStylePreset) -> Unit = {},
+    onSecondarySymbolsChanged: (Boolean) -> Unit = {},
+    onBottomEmojiKeyChanged: (Boolean) -> Unit = {},
     onKeySizeSelected: (KeyboardSizingProfile) -> Unit,
     onOpenPlacement: () -> Unit,
     onElevationSelected: (Float) -> Unit,
@@ -43,6 +49,15 @@ internal fun LayoutSection(
         title = sectionTitle(R.string.settings_section_layout),
         modifier = Modifier.testTag(LayoutSettingsSectionTag),
     ) {
+        SegmentedRow(
+            title = stringResource(R.string.settings_style_preset_title),
+            options = listOf("Laban Key", "SwiftKey", "Glass"),
+            selectedIndex = keyboardStyle.preset.ordinal,
+            onSelect = { onStylePresetSelected(KeyboardStylePreset.entries[it]) },
+            icon = FunputIcons.Appearance,
+            tint = FunputTint.BLUE,
+        )
+        divider()
         LinkRow(
             title = stringResource(R.string.settings_keyboard_mode_title),
             value = placement.activeMode.label(),
@@ -90,6 +105,24 @@ internal fun LayoutSection(
                 tint = FunputTint.BLUE,
             )
         }
+        divider()
+        ToggleRow(
+            title = stringResource(R.string.settings_secondary_symbols_title),
+            summary = stringResource(R.string.settings_secondary_symbols_summary),
+            checked = keyboardStyle.showSecondarySymbols,
+            onCheckedChange = onSecondarySymbolsChanged,
+            icon = FunputIcons.ToneMarks,
+            tint = FunputTint.BLUE,
+        )
+        divider()
+        ToggleRow(
+            title = stringResource(R.string.settings_bottom_emoji_title),
+            summary = stringResource(R.string.settings_bottom_emoji_summary),
+            checked = keyboardStyle.showBottomEmojiKey,
+            onCheckedChange = onBottomEmojiKeyChanged,
+            icon = FunputIcons.Suggestions,
+            tint = FunputTint.BLUE,
+        )
         divider()
         PercentSliderRow(
             title = stringResource(R.string.settings_key_size_title),

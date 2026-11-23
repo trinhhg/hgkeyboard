@@ -10,6 +10,7 @@ import app.funput.funput.keyboard.model.KeyboardEditorMode
 import app.funput.funput.keyboard.model.KeyboardInputMethod
 import app.funput.funput.keyboard.model.KeyboardLayout
 import app.funput.funput.keyboard.model.KeyboardLayoutMode
+import app.funput.funput.keyboard.model.KeyboardStyleOptions
 
 internal object KeyboardLayoutResolver {
     fun resolve(
@@ -19,6 +20,7 @@ internal object KeyboardLayoutResolver {
         suggestionsEnabled: Boolean = KeyboardFeatures.SuggestionsEnabled,
         systemInputMethodSwitcherVisible: Boolean = false,
         showsNumberRow: Boolean = true,
+        styleOptions: KeyboardStyleOptions = KeyboardStyleOptions.Default,
     ): KeyboardLayout {
         val usesCompact = usesCompactLetterRows(inputMethod, editorMode, showsNumberRow)
         val layout = when (mode) {
@@ -27,6 +29,7 @@ internal object KeyboardLayoutResolver {
                 editorMode = editorMode,
                 suggestionsEnabled = suggestionsEnabled,
                 showsNumberRow = showsNumberRow,
+                styleOptions = styleOptions,
             )
             KeyboardLayoutMode.SYMBOLS_PRIMARY -> if (usesCompact) {
                 CompactSymbolLayouts.primary(inputMethod, suggestionsEnabled)

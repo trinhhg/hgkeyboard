@@ -9,6 +9,7 @@ import app.funput.funput.ime.shortcuts.ImeShortcutsController
 import app.funput.funput.ime.shortcuts.createImeShortcutsController
 import app.funput.funput.ime.speech.integration.settings.ImeSpeechSettingsBinding
 import app.funput.funput.keyboard.model.ShiftState
+import app.funput.funput.keyboard.ui.clipboard.KeyboardShortcutEntry
 import kotlinx.coroutines.CoroutineScope
 
 internal class ImeRuntime(
@@ -41,7 +42,14 @@ internal fun createImeRuntime(
     return ImeRuntime(
         session = session,
         settings = settings,
-        shortcuts = createImeShortcutsController(service, scope, session.actionHandler),
+        shortcuts = createImeShortcutsController(service, scope, session.actionHandler) { library ->
+            val mapped = if (library.isEnabled) {
+                library.entries.map { KeyboardShortcutEntry(it.trigger, it.expansion) }
+            } else {
+                emptyList()
+            }
+            session.updateShortcuts(mapped, views.view)
+        },
         hardwareKeyboard = HardwareKeyboard.bind(
             service = service,
             session = session,

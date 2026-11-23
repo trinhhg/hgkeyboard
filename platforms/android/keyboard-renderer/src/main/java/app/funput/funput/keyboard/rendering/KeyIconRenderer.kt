@@ -40,6 +40,9 @@ internal class KeyIconRenderer(metrics: RenderMetrics) {
             KeyRole.CLIPBOARD -> clipboardIcon.draw(canvas, key, clipboardOfferActive)
             KeyRole.MICROPHONE -> microphoneIcon.draw(canvas, key)
             KeyRole.EMOJI -> utilityIcons.drawEmoji(canvas, key)
+            KeyRole.THEME -> utilityIcons.drawTheme(canvas, key)
+            KeyRole.SETTINGS -> utilityIcons.drawSettings(canvas, key)
+            KeyRole.TOOLBAR_TOGGLE -> utilityIcons.drawToolbarToggle(canvas, key)
             else -> return false
         }
         return true

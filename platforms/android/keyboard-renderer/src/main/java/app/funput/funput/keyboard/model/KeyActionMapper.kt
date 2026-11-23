@@ -21,6 +21,9 @@ internal fun KeySpec.toKeyAction(shiftState: ShiftState): KeyAction? = when (rol
     KeyRole.CLIPBOARD,
     KeyRole.EMOJI,
     KeyRole.MICROPHONE,
+    KeyRole.THEME,
+    KeyRole.SETTINGS,
+    KeyRole.TOOLBAR_TOGGLE,
     -> null
     KeyRole.SPACE -> KeyAction.Space
     KeyRole.ENTER -> KeyAction.Enter

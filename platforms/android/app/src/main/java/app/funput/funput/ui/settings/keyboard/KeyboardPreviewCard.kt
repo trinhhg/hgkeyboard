@@ -58,6 +58,8 @@ internal fun KeyboardPreviewCard(
     inputMethod: KeyboardInputMethod,
     sizingProfile: KeyboardSizingProfile,
     showsNumberRow: Boolean,
+    styleOptions: app.funput.funput.keyboard.model.KeyboardStyleOptions =
+        app.funput.funput.keyboard.model.KeyboardStyleOptions.Default,
     onOpenAppearance: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -90,6 +92,7 @@ internal fun KeyboardPreviewCard(
                         inputMethod = inputMethod,
                         sizingProfile = sizingProfile,
                         showsNumberRow = numberRow,
+                        styleOptions = styleOptions,
                     ),
                     modifier = Modifier
                         .wrapContentSize(Alignment.TopStart, unbounded = true)

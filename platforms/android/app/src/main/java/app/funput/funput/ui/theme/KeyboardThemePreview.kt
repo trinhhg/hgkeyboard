@@ -25,6 +25,8 @@ internal data class KeyboardThemePreviewConfiguration(
     val sizingProfile: KeyboardSizingProfile = KeyboardSizingProfile.Normal,
     val suggestionBarEnabled: Boolean = true,
     val showsNumberRow: Boolean = true,
+    val styleOptions: app.funput.funput.keyboard.model.KeyboardStyleOptions =
+        app.funput.funput.keyboard.model.KeyboardStyleOptions.Default,
     val suggestions: List<String> = emptyList(),
     val enterAction: KeyboardEnterAction = KeyboardEnterAction.Standard.NEW_LINE,
 )
@@ -74,6 +76,7 @@ private fun KeyboardSurfaceView.applyPreview(
     sizingProfile = configuration.sizingProfile
     suggestionBarEnabled = configuration.suggestionBarEnabled
     showsNumberRow = configuration.showsNumberRow
+    styleOptions = configuration.styleOptions
     suggestions = configuration.suggestions.asSuggestionChips()
     enterAction = configuration.enterAction
     systemInputMethodSwitcherVisible = false

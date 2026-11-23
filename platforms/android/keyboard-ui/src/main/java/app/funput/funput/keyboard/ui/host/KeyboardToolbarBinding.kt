@@ -10,6 +10,7 @@ internal fun bindKeyboardToolbar(
     openEmoji: () -> Unit,
     openClipboard: () -> Unit,
     openPlacement: () -> Unit,
+    openTheme: () -> Unit,
 ) {
     surface.callbacks.onEmojiRequested = openEmoji
     surface.callbacks.onClipboardPasteRequested = callbacks::dispatchClipboardPasteRequest
@@ -19,6 +20,7 @@ internal fun bindKeyboardToolbar(
         openPlacement()
     }
     surface.callbacks.onSettingsRequested = callbacks::dispatchSettingsRequest
+    surface.callbacks.onThemeRequested = openTheme
     surface.callbacks.onMicrophoneRequested = {
         if (surface.microphone.visible && surface.editorMode in listOf(
                 KeyboardEditorMode.TEXT, KeyboardEditorMode.SEARCH, KeyboardEditorMode.URL)) {

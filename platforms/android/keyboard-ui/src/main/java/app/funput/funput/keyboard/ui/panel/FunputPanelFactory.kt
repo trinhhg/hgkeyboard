@@ -6,6 +6,7 @@ import app.funput.funput.keyboard.ui.EmojiPanelView
 import app.funput.funput.keyboard.ui.FunputKeyboardCallbacks
 import app.funput.funput.keyboard.ui.clipboard.ClipboardPanelView
 import app.funput.funput.keyboard.ui.localtext.LocalTextFields
+import app.funput.funput.keyboard.ui.theme.ThemePanelView
 import app.funput.funput.theme.KeyboardTheme
 
 internal class FunputPanelFactory(
@@ -34,10 +35,18 @@ internal class FunputPanelFactory(
         soundsEnabled = sounds()
         clipboardState.attach(this)
         onSelect = callbacks::dispatchClipboardEntry
+        onSelectShortcut = callbacks::dispatchShortcutEntry
         onTogglePin = callbacks::dispatchClipboardPin
         onRemove = callbacks::dispatchClipboardRemove
         onClearAll = callbacks::dispatchClipboardClear
         onDelete = { callbacks.dispatch(KeyAction.Backspace) }
         onReturn = showLetters
+    }
+
+    fun createTheme() = ThemePanelView(context).apply {
+        updateTheme(theme())
+        onThemeSelected = callbacks::dispatchThemeSelected
+        onReturn = showLetters
+        onOpenSettings = callbacks::dispatchSettingsRequest
     }
 }

@@ -24,8 +24,13 @@ internal class SpacebarContentRenderer(private val metrics: RenderMetrics) {
         language: KeyboardLanguage,
         customLabel: String? = null,
     ) {
-        val isLabanSpace = theme.accentColor == 0xFF2563EB.toInt()
-        labelPaint.color = if (isLabanSpace) 0xFF1D4ED8.toInt() else theme.secondaryLabelColor
+        val isLabanSpace = theme.accentColor == 0xFF2095F4.toInt()
+        val isLight = ((theme.backgroundStartColor shr 16) and 0xFF) > 0x80
+        labelPaint.color = when {
+            isLabanSpace && isLight -> 0xFF1976D2.toInt()
+            isLabanSpace -> 0xFF90CAF9.toInt()
+            else -> theme.secondaryLabelColor
+        }
         labelPaint.textSize = metrics.labelSp(LabelSizeSp, theme)
         labelPaint.typeface = KeyLabelTypography.specialTypeface(theme)
         labelPaint.getFontMetrics(fontMetrics)
@@ -35,7 +40,7 @@ internal class SpacebarContentRenderer(private val metrics: RenderMetrics) {
         val labelText = customLabel ?: if (language == KeyboardLanguage.VIETNAMESE) "Hg" else language.displayLabel
         canvas.drawText(labelText, centerX, baseline, labelPaint)
 
-        if (customLabel != null) return
+        if (customLabel != null || isLabanSpace) return
 
         chevronPaint.color = (theme.secondaryLabelColor and 0x00FFFFFF) or ChevronAlpha
         val offset = min(key.bounds.width * 0.34f, metrics.dp(MaxChevronOffsetDp))

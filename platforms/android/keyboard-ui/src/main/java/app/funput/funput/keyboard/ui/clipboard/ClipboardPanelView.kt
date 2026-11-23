@@ -28,6 +28,7 @@ import java.time.Instant
 
 internal class ClipboardPanelView(context: Context) : KeyboardPanelComposeView(context) {
     var onSelect: (KeyboardClipboardEntry) -> Unit = {}
+    var onSelectShortcut: (KeyboardShortcutEntry) -> Unit = {}
     var onTogglePin: (KeyboardClipboardEntry) -> Unit = {}
     var onRemove: (KeyboardClipboardEntry) -> Unit = {}
     var onClearAll: () -> Unit = {}
@@ -40,6 +41,7 @@ internal class ClipboardPanelView(context: Context) : KeyboardPanelComposeView(c
         get() = isSoundEffectsEnabled
         set(value) { isSoundEffectsEnabled = value }
     private var entries by mutableStateOf<List<KeyboardClipboardEntry>>(emptyList())
+    private var shortcuts by mutableStateOf<List<KeyboardShortcutEntry>>(emptyList())
     private var loading by mutableStateOf(false)
     private var palette by mutableStateOf<KeyboardPanelPalette?>(null)
     private var now by mutableStateOf(Instant.now())
@@ -51,6 +53,10 @@ internal class ClipboardPanelView(context: Context) : KeyboardPanelComposeView(c
         entries = value
         loading = isLoading
         now = Instant.now()
+    }
+
+    fun submitShortcuts(value: List<KeyboardShortcutEntry>) {
+        shortcuts = value
     }
 
     fun updateTheme(theme: KeyboardTheme) {
@@ -67,8 +73,9 @@ internal class ClipboardPanelView(context: Context) : KeyboardPanelComposeView(c
     private fun Content() {
         val colors = palette ?: return
         ClipboardPanelContent(
-            entries, loading, now, colors, resetGeneration,
+            entries, shortcuts, loading, now, colors, resetGeneration,
             { feedback(KeyboardHapticType.KEY_PRESS); onSelect(it) },
+            { feedback(KeyboardHapticType.KEY_PRESS); onSelectShortcut(it) },
             { feedback(KeyboardHapticType.CONTROL); onTogglePin(it) },
             { feedback(KeyboardHapticType.CONTROL); onRemove(it) },
             { feedback(KeyboardHapticType.CONTROL); onClearAll() },

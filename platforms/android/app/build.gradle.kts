@@ -27,8 +27,8 @@ android {
         // it, and a build number derived from the run number. Neither is committed, so
         // shipping needs no version bump in the tree and two deploys can never claim
         // the same build number. The literals below are only what a local build gets.
-        versionCode = providers.gradleProperty("funput.versionCode").orNull?.toInt() ?: 102
-        versionName = providers.gradleProperty("funput.versionName").orNull ?: "1.0.2"
+        versionCode = providers.gradleProperty("funput.versionCode").orNull?.toInt() ?: 103
+        versionName = providers.gradleProperty("funput.versionName").orNull ?: "1.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

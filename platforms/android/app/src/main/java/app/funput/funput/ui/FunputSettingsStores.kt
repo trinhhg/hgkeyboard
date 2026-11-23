@@ -7,6 +7,7 @@ import app.funput.funput.ime.settings.InputMethodSettings
 import app.funput.funput.ime.settings.KeyboardFeedbackSettings
 import app.funput.funput.ime.settings.KeyboardPlacementSettings
 import app.funput.funput.ime.settings.KeyboardSizingSettings
+import app.funput.funput.ime.settings.KeyboardStyleSettings
 import app.funput.funput.ime.settings.KeyboardThemeSettings
 import app.funput.funput.ime.settings.NumberRowSettings
 import app.funput.funput.ime.settings.PersonalSuggestionSettings
@@ -26,6 +27,7 @@ internal class FunputSettingsStores(context: Context) {
     val clipboard = ClipboardSettings(context)
     val feedbackStore = KeyboardFeedbackSettings(context)
     val numberRowStore = NumberRowSettings(context)
+    val styleStore = KeyboardStyleSettings(context)
     val smartCompositionStore = SmartCompositionSettings(context)
     val smartGestureStore = SmartGestureSettings(context)
     val letterReturnStore = LetterPageReturnSettings(context)

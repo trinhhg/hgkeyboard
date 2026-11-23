@@ -3,6 +3,8 @@ package app.funput.funput.ui.settings
 import androidx.compose.runtime.Immutable
 import app.funput.funput.ime.clipboard.model.ClipboardExpiry
 import app.funput.funput.ime.settings.ClipboardPreferences
+import app.funput.funput.ime.settings.KeyboardStylePreferences
+import app.funput.funput.ime.settings.KeyboardStylePreset
 import app.funput.funput.ime.settings.SmartCompositionPreferences
 import app.funput.funput.ime.settings.ToneStyle
 import app.funput.funput.keyboard.KeyboardHapticStrength
@@ -25,6 +27,7 @@ internal class SettingsScreenState(
     val keyboardTheme: KeyboardThemeDescriptor,
     val inputMethod: KeyboardInputMethod,
     val showsNumberRow: Boolean,
+    val keyboardStyle: KeyboardStylePreferences = KeyboardStylePreferences.Default,
     val toneStyle: ToneStyle,
     val keySizeProfile: KeyboardSizingProfile,
     val placement: KeyboardPlacementPreferences = KeyboardPlacementPreferences.Default,
@@ -47,6 +50,9 @@ internal class SettingsScreenState(
     val extraOnsets: ExtraOnsetsSectionState = ExtraOnsetsSectionState(smartComposition.extraOnsets, inputMethod),
     val onInputMethodSelected: (KeyboardInputMethod) -> Unit,
     val onShowsNumberRowChanged: (Boolean) -> Unit,
+    val onStylePresetSelected: (KeyboardStylePreset) -> Unit = {},
+    val onSecondarySymbolsChanged: (Boolean) -> Unit = {},
+    val onBottomEmojiKeyChanged: (Boolean) -> Unit = {},
     val onOpenAppearance: () -> Unit,
     val speechAvailable: Boolean = false,
     val onToneStyleSelected: (ToneStyle) -> Unit,

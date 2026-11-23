@@ -13,17 +13,18 @@ import app.funput.funput.keyboard.layout.geometry.KeyboardHitTargetResolver
  * a blank gap above them.
  */
 internal object ToolbarMetrics {
-    /**
-     * The suggestion band, sized like Gboard's strip rather than like a key row: the toolbar
-     * carries one line of text and two icons, so anything taller is keyboard height spent on
-     * padding. The utility keys still take the full band and widen into their neighbours'
-     * slack (see [KeyboardHitTargetResolver]), so the shorter band costs no tap area.
-     */
-    const val SuggestionBarHeightDp = 44f
+    /** Single-bar height matching Laban Key (`suggestions_strip_height = 44dp` / compact 42dp). */
+    const val SuggestionBarHeightDp = 42f
 
     /** Separates the band from the first key row. */
     const val SuggestionBarGapDp = 4f
 
-    /** The vertical strip the toolbar claims in total. */
+    /** The vertical strip the single-bar toolbar claims in total. */
     const val ChromeDp = SuggestionBarHeightDp + SuggestionBarGapDp
+
+    /** SwiftKey dual-bar metrics: dedicated top utility strip + suggestion strip underneath. */
+    const val DualUtilityRowHeightDp = 36f
+    const val DualRowGapDp = 2f
+    const val DualSuggestionRowHeightDp = 36f
+    const val DualChromeDp = DualUtilityRowHeightDp + DualRowGapDp + DualSuggestionRowHeightDp + SuggestionBarGapDp
 }

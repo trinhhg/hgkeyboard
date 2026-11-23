@@ -31,6 +31,7 @@ internal class ImeKeyActionHandler(
         if (mode.suggestionsAllowed) suggestions.reset()
     }
     var smartGesturesEnabled: Boolean by gestures::enabled
+    var doubleSpacePeriodEnabled: Boolean by gestures::doubleSpacePeriodEnabled
     val typingSession = ImeTypingSession()
     private val typing = ImeTypingHandler(
         composition = composition,

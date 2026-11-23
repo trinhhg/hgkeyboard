@@ -11,8 +11,11 @@ internal enum class TopNumberRowMode {
     PLAIN_PUNCTUATION,
 }
 
-internal fun topNumberRowForLetters(inputMethod: KeyboardInputMethod): KeyboardRow =
-    topNumberRowFor(inputMethod, "letters-${inputMethod.name.lowercase()}", composesVietnamese = true)
+internal fun topNumberRowForLetters(
+    inputMethod: KeyboardInputMethod,
+    showVniHints: Boolean = true,
+): KeyboardRow =
+    topNumberRowFor(inputMethod, "letters-${inputMethod.name.lowercase()}", composesVietnamese = showVniHints)
 
 /**
  * The digits row for [inputMethod], carrying VNI tone hints only where tones actually apply.

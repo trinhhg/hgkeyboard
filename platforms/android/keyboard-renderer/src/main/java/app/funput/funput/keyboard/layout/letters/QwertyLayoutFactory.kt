@@ -35,13 +35,20 @@ internal fun qwertyLayout(
     },
 )
 
-internal fun standardSpaceKey(widthWeight: Float = 5.8f) = KeySpec(
+internal fun standardSpaceKey(
+    widthWeight: Float = 5.8f,
+    swipeSwitchesLanguage: Boolean = false,
+) = KeySpec(
     id = "space",
     label = "Tiếng Việt",
     role = KeyRole.SPACE,
     widthWeight = widthWeight,
-    accessibilityLabel = "Dấu cách. Vuốt để đổi Tiếng Việt và Tiếng Anh",
-    horizontalSwipeAction = KeySwipeAction.TOGGLE_LANGUAGE,
+    accessibilityLabel = if (swipeSwitchesLanguage) {
+        "Dấu cách. Vuốt để đổi Tiếng Việt và Tiếng Anh"
+    } else {
+        "Dấu cách"
+    },
+    horizontalSwipeAction = if (swipeSwitchesLanguage) KeySwipeAction.TOGGLE_LANGUAGE else null,
 )
 
 internal fun asciiSpaceKey(widthWeight: Float) = KeySpec(

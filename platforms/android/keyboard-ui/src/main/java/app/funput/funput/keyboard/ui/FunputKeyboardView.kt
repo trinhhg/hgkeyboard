@@ -105,6 +105,7 @@ class FunputKeyboardView @JvmOverloads constructor(
     var clipboardHistoryLoading: Boolean by clipboardState::loading
     var language: KeyboardLanguage by keyboardSurface::language
     var areSmartGesturesEnabled by keyboardSurface::areSmartGesturesEnabled
+    var longPressDelayMillis by keyboardSurface::longPressDelayMillis
     var hapticsEnabled: Boolean by feedbackController::hapticsEnabled
     var hapticStrength: KeyboardHapticStrength? by feedbackController::hapticStrength
     var keyPreviewsEnabled: Boolean by feedbackController::keyPreviewsEnabled
@@ -128,6 +129,8 @@ class FunputKeyboardView @JvmOverloads constructor(
     fun showEmojiPanel(): Unit = panelCoordinator.showEmoji()
     fun showLettersPanel(): Unit = panelCoordinator.showLetters()
     fun showThemePanel(): Unit = panelCoordinator.showTheme()
+    fun setTypingPresence(hasTextBeforeCursor: Boolean) =
+        keyboardSurface.setTypingPresence(hasTextBeforeCursor)
     fun showClipboardPanel() {
         if (!clipboardState.available() || activePanel == KeyboardPanel.CLIPBOARD) return
         panelCoordinator.showClipboard(); callbacks.dispatchClipboardPanelOpened()
@@ -137,7 +140,7 @@ class FunputKeyboardView @JvmOverloads constructor(
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val size = hostMeasure.resolve(widthMeasureSpec, heightMeasureSpec,
-            inputMethod, editorMode, sizingProfile, showsNumberRow)
+            inputMethod, editorMode, sizingProfile, showsNumberRow, styleOptions.isDualBar)
         super.onMeasure(size.widthSpec, size.heightSpec)
     }
 

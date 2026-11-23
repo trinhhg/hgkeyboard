@@ -44,6 +44,16 @@ internal class ImeInputViewBinder(
                     KeyboardThemeId.LabanDark -> styleStore.applyPreset(KeyboardStylePreset.LABAN, isDark = true)
                     KeyboardThemeId.SwiftKey -> styleStore.applyPreset(KeyboardStylePreset.SWIFTKEY, isDark = false)
                     KeyboardThemeId.SwiftKeyDark -> styleStore.applyPreset(KeyboardStylePreset.SWIFTKEY, isDark = true)
+                    KeyboardThemeId.SwiftKeyClassic -> styleStore.applyPreset(
+                        KeyboardStylePreset.SWIFTKEY,
+                        isDark = false,
+                        themeIdOverride = KeyboardThemeId.SwiftKeyClassic,
+                    )
+                    KeyboardThemeId.SwiftKeyClassicDark -> styleStore.applyPreset(
+                        KeyboardStylePreset.SWIFTKEY,
+                        isDark = true,
+                        themeIdOverride = KeyboardThemeId.SwiftKeyClassicDark,
+                    )
                     KeyboardThemeId.LiquidGlass -> styleStore.applyPreset(KeyboardStylePreset.LIQUID_GLASS)
                     else -> KeyboardThemeSettings(service).setTheme(themeId, KeyboardThemeSlot.SINGLE)
                 }
@@ -57,6 +67,7 @@ internal class ImeInputViewBinder(
     fun update() {
         val keyboard = view ?: return
         val editing = session()
+        editing.actionHandler.doubleSpacePeriodEnabled = settings().stylePreferences.doubleSpacePeriodEnabled
         keyboard.applyImeState(settings(), editing.editorRuntime.policy,
             editing.actionHandler.language, themeRepository, service.isDarkAppearance())
         editing.actionHandler.smartGesturesEnabled = keyboard.areSmartGesturesEnabled

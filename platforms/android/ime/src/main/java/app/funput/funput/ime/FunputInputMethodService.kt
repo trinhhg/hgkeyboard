@@ -54,6 +54,8 @@ class FunputInputMethodService : InputMethodService() {
         super.onStartInputView(attribute, restarting)
         views.update()
         session.startInputView(editorRuntime.policy)
+        val hasBefore = !currentInputConnection?.getTextBeforeCursor(1, 0).isNullOrEmpty()
+        views.view?.setTypingPresence(hasBefore)
         editorRuntime.updateCapitalization(preserveCapsLock = false)
         speech.show()
     }
@@ -77,6 +79,7 @@ class FunputInputMethodService : InputMethodService() {
         speech.selectionChanged(newSelStart, newSelEnd)
         actionHandler.onSelectionChanged(newSelStart, newSelEnd, candidatesStart, candidatesEnd)
         suggestionService.consume(actionHandler.takeSuggestionUpdate())
+        views.view?.setTypingPresence(newSelStart > 0 || candidatesStart >= 0)
         editorRuntime.updateCapitalization()
     }
 

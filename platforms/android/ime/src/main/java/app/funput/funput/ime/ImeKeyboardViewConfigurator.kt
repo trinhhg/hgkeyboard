@@ -38,6 +38,7 @@ internal fun FunputKeyboardView.applyImeState(
         keyboardThemeBackgroundImage = descriptor.backgroundImage,
         showsNumberRow = settings.showsNumberRow,
         styleOptions = settings.stylePreferences.toLayoutOptions(),
+        longPressDelayMillis = settings.stylePreferences.longPressDelayMs.toLong(),
         toolbarArrangement = settings.toolbarArrangement,
     )
 }
@@ -55,11 +56,13 @@ internal fun FunputKeyboardView.configureForEditor(
     toolbarArrangement: app.funput.funput.keyboard.layout.toolbar.ToolbarArrangement,
     styleOptions: app.funput.funput.keyboard.model.KeyboardStyleOptions =
         app.funput.funput.keyboard.model.KeyboardStyleOptions.Default,
+    longPressDelayMillis: Long = 350L,
 ) {
     showLettersPanel()
     this.inputMethod = inputMethod
     this.showsNumberRow = showsNumberRow
     this.styleOptions = styleOptions
+    this.longPressDelayMillis = longPressDelayMillis
     this.sizingProfile = sizingProfile
     this.placementPreferences = placementPreferences
     this.keyboardTheme = keyboardTheme

@@ -21,6 +21,8 @@ value class KeyboardThemeId private constructor(val value: String) {
         val LabanDark: KeyboardThemeId = KeyboardThemeId("laban-dark")
         val SwiftKey: KeyboardThemeId = KeyboardThemeId("swiftkey")
         val SwiftKeyDark: KeyboardThemeId = KeyboardThemeId("swiftkey-dark")
+        val SwiftKeyClassic: KeyboardThemeId = KeyboardThemeId("swiftkey-classic")
+        val SwiftKeyClassicDark: KeyboardThemeId = KeyboardThemeId("swiftkey-classic-dark")
         val GlassDark: KeyboardThemeId = KeyboardThemeId("glass-dark")
         val GlassLight: KeyboardThemeId = KeyboardThemeId("glass-light")
         val LiquidGlass: KeyboardThemeId = KeyboardThemeId("liquid-glass")

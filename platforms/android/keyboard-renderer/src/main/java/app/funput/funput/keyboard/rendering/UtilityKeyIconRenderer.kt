@@ -17,10 +17,12 @@ internal class UtilityKeyIconRenderer(private val metrics: RenderMetrics) {
     private val path = Path()
     private val drawingRect = RectF()
     private val placement = PlacementKeyIconRenderer(metrics)
+    private var isSwiftKeyStyle = false
 
     fun updateTheme(theme: KeyboardTheme) {
         paint.color = theme.specialLabelColor
-        paint.strokeWidth = metrics.dp(1.7f)
+        paint.strokeWidth = metrics.dp(1.6f)
+        isSwiftKeyStyle = theme.centerSecondaryLabel
     }
 
     fun drawBackspace(canvas: Canvas, key: ResolvedKey) {
@@ -156,23 +158,30 @@ internal class UtilityKeyIconRenderer(private val metrics: RenderMetrics) {
         canvas.drawCircle(cx, cy, r * 0.80f, paint)
     }
 
-    /** Draws a chevron (< or >) to expand or collapse the utility toolbar while typing. */
+    /** Draws a Laban-style hamburger (≡) or SwiftKey circle-chevron toggle on the toolbar. */
     fun drawToolbarToggle(canvas: Canvas, key: ResolvedKey) {
-        val r = min(key.bounds.width, key.bounds.height) * 0.18f
+        val r = min(key.bounds.width, key.bounds.height) * 0.22f
         val cx = key.bounds.centerX
         val cy = key.bounds.centerY
-        path.reset()
-        if (key.active) {
-            // '>' points right to return to predictions
-            path.moveTo(cx - r * 0.45f, cy - r)
-            path.lineTo(cx + r * 0.55f, cy)
-            path.lineTo(cx - r * 0.45f, cy + r)
+        if (isSwiftKeyStyle) {
+            canvas.drawCircle(cx, cy, r * 1.15f, paint)
+            path.reset()
+            if (key.active) {
+                path.moveTo(cx - r * 0.55f, cy + r * 0.2f)
+                path.lineTo(cx, cy - r * 0.35f)
+                path.lineTo(cx + r * 0.55f, cy + r * 0.2f)
+            } else {
+                path.moveTo(cx - r * 0.55f, cy - r * 0.2f)
+                path.lineTo(cx, cy + r * 0.35f)
+                path.lineTo(cx + r * 0.55f, cy - r * 0.2f)
+            }
+            canvas.drawPath(path, paint)
         } else {
-            // '<' points left to reveal full toolbar
-            path.moveTo(cx + r * 0.45f, cy - r)
-            path.lineTo(cx - r * 0.55f, cy)
-            path.lineTo(cx + r * 0.45f, cy + r)
+            val halfW = r * 1.1f
+            val dy = r * 0.65f
+            canvas.drawLine(cx - halfW, cy - dy, cx + halfW, cy - dy, paint)
+            canvas.drawLine(cx - halfW, cy, cx + halfW, cy, paint)
+            canvas.drawLine(cx - halfW, cy + dy, cx + halfW, cy + dy, paint)
         }
-        canvas.drawPath(path, paint)
     }
 }

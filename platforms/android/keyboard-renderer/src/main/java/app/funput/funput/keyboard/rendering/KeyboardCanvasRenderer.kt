@@ -27,6 +27,7 @@ import app.funput.funput.keyboard.interaction.KeyboardSurfaceInteraction
 internal class KeyboardCanvasRenderer(resources: Resources) {
     private val metrics = RenderMetrics(resources)
     private val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val toolbarBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val keyRenderer = KeyRenderer(metrics)
     private val keyPopupRenderer = KeyPopupRenderer(metrics)
     private val suggestionBarRenderer = SuggestionBarRenderer(metrics)
@@ -36,6 +37,7 @@ internal class KeyboardCanvasRenderer(resources: Resources) {
 
     fun updateTheme(theme: KeyboardTheme, width: Int, height: Int) {
         this.theme = theme
+        toolbarBackgroundPaint.color = theme.toolbarBackgroundColor
         keyRenderer.updateTheme(theme, width, height)
         suggestionBarRenderer.updateTheme(theme)
         keyPopupRenderer.updateTheme(theme)
@@ -77,13 +79,17 @@ internal class KeyboardCanvasRenderer(resources: Resources) {
         language: KeyboardLanguage,
         enterAction: KeyboardEnterAction,
         showsKeyPreviews: Boolean,
+        alwaysCapitalizeLabels: Boolean = false,
     ) {
         canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), backgroundPaint)
         liquidGlassBackdrop.draw(canvas, width, height)
         backgroundImageRenderer.draw(canvas, backgroundBitmap, backgroundImage, width, height)
         val interaction = pressedKeys as? KeyboardSurfaceInteraction
         keyboard.suggestionBar?.let { bar ->
-            if (bar.suggestionsEnabled) {
+            bar.toolbarRowBounds?.let { tb ->
+                canvas.drawRect(tb.left, tb.top, tb.right, tb.bottom, toolbarBackgroundPaint)
+            }
+            if (bar.suggestionsEnabled && bar.suggestionsBounds.width > 0f) {
                 // A long press swaps the candidates for the word's actions until it closes.
                 val segments = interaction?.suggestionActionSegments(keyboard)?.takeIf { it.isNotEmpty() }
                     ?: SuggestionBand.chips(suggestions, bar.suggestionsBounds)
@@ -94,7 +100,7 @@ internal class KeyboardCanvasRenderer(resources: Resources) {
         keyboard.keys.forEach { key ->
             keyRenderer.draw(
                 canvas, key, theme, pressedKeys.isPressed(key.spec.id), shiftState, language,
-                enterAction, clipboardOfferActive,
+                enterAction, clipboardOfferActive, alwaysCapitalizeLabels,
             )
         }
         val alternatePreview = interaction?.alternatePreview

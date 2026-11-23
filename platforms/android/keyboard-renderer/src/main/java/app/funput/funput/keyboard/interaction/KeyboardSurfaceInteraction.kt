@@ -98,6 +98,7 @@ internal class KeyboardSurfaceInteraction(
         set(value) = controller.setLanguage(value)
     var areSmartGesturesEnabled by controller::areSmartGesturesEnabled
     var breaksLineOnEnterHold by controller::breaksLineOnEnterHold
+    var longPressDelayMillis by controller::longPressDelayMillis
     val alternatePreview: AlternateSelectionPreview? get() = controller.alternatePreview
 
     /** The actions a long press opened, drawn in place of the candidates; empty while closed. */

@@ -31,6 +31,19 @@ internal object ToolbarGeometry {
     ): ResolvedSuggestionBar? {
         val bar = layout.suggestionBar ?: return null
         val top = spec.verticalPadding
+        if (spec.isDualBar) {
+            return resolveDualBar(
+                bar = bar,
+                width = width,
+                spec = spec,
+                top = top,
+                showClipboard = showClipboard,
+                showPlacement = showPlacement,
+                microphone = microphone,
+                arrangement = arrangement,
+                showUtilities = showUtilities,
+            )
+        }
         val bottom = top + spec.suggestionBarHeight
         val cell = spec.suggestionBarHeight
         val ordered = arrangement.normalize(
@@ -101,6 +114,60 @@ internal object ToolbarGeometry {
         )
     }
 
+    private fun resolveDualBar(
+        bar: SuggestionBarSpec,
+        width: Float,
+        spec: KeyboardGeometrySpec,
+        top: Float,
+        showClipboard: Boolean,
+        showPlacement: Boolean,
+        microphone: KeyboardMicrophoneState,
+        arrangement: ToolbarArrangement,
+        showUtilities: Boolean,
+    ): ResolvedSuggestionBar {
+        val row1Bottom = top + spec.toolbarRowHeight
+        val row2Top = row1Bottom + spec.dualRowGap
+        val row2Bottom = row2Top + spec.suggestionBarHeight
+        val ordered = arrangement.normalize(
+            availableSlots(bar, showClipboard, showPlacement, microphone.visible, showUtilities = true),
+        )
+        val allSlots = ordered.leading + ordered.trailing
+        val placed = linkedMapOf<ToolbarSlot, KeyBounds>()
+        val leftEdge = spec.horizontalPadding
+        val rightEdge = width - spec.horizontalPadding
+        val availWidth = (rightEdge - leftEdge).coerceAtLeast(spec.toolbarRowHeight)
+        val cell1 = spec.toolbarRowHeight
+        val maxItems = ((availWidth + spec.horizontalGap) / (cell1 * 0.85f + spec.horizontalGap)).toInt().coerceAtLeast(1)
+        val visibleSlots = trimOptionalSlots(allSlots, maxItems)
+        if (visibleSlots.isNotEmpty()) {
+            val step = availWidth / visibleSlots.size
+            val slotW = cell1.coerceAtMost(step)
+            visibleSlots.forEachIndexed { index, slot ->
+                val cx = leftEdge + step * (index + 0.5f)
+                placed[slot] = KeyBounds(cx - slotW / 2f, top, cx + slotW / 2f, row1Bottom)
+            }
+        }
+        var sugLeft = leftEdge
+        val toggleKey = bar.toolbarToggleKey?.let { specKey ->
+            val toggleW = (spec.suggestionBarHeight * 0.82f).coerceAtMost(availWidth * 0.2f)
+            val bounds = KeyBounds(sugLeft, row2Top, sugLeft + toggleW, row2Bottom)
+            sugLeft = bounds.right + spec.horizontalGap
+            ResolvedKey(specKey, bounds, active = showUtilities)
+        }
+        val sugBounds = KeyBounds(sugLeft, row2Top, rightEdge.coerceAtLeast(sugLeft), row2Bottom)
+        val toolbarRowBounds = KeyBounds(0f, 0f, width, row1Bottom + spec.dualRowGap * 0.5f)
+        return buildResult(
+            bar = bar,
+            bounds = KeyBounds(spec.horizontalPadding, top, width - spec.horizontalPadding, row2Bottom),
+            suggestionsBounds = sugBounds,
+            placed = placed,
+            systemBounds = null,
+            toggleKey = toggleKey,
+            microphone = microphone,
+            toolbarRowBounds = toolbarRowBounds,
+        )
+    }
+
     private fun buildResult(
         bar: SuggestionBarSpec,
         bounds: KeyBounds,
@@ -109,6 +176,7 @@ internal object ToolbarGeometry {
         systemBounds: KeyBounds?,
         toggleKey: ResolvedKey?,
         microphone: KeyboardMicrophoneState,
+        toolbarRowBounds: KeyBounds? = null,
     ): ResolvedSuggestionBar = ResolvedSuggestionBar(
         bounds = bounds,
         suggestionsBounds = suggestionsBounds,
@@ -123,6 +191,7 @@ internal object ToolbarGeometry {
         settingsKey = placed[ToolbarSlot.SETTINGS]?.let { ResolvedKey(requireNotNull(bar.settingsKey), it) },
         toolbarToggleKey = toggleKey,
         suggestionsEnabled = bar.suggestionsEnabled,
+        toolbarRowBounds = toolbarRowBounds,
     )
 
     private fun trimOptionalSlots(slots: List<ToolbarSlot>, maxItems: Int): List<ToolbarSlot> {

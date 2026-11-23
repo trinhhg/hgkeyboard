@@ -15,6 +15,7 @@ internal class KeyboardSurfaceGeometry(
     private val profile: () -> KeyboardSizingProfile,
     private val utilitiesVisible: () -> Boolean,
     private val hasSuggestions: () -> Boolean = { false },
+    private val isDualBar: () -> Boolean = { false },
     private val microphoneAllowed: () -> Boolean,
     private val changed: () -> Unit,
 ) {
@@ -61,6 +62,7 @@ internal class KeyboardSurfaceGeometry(
             arrangement = arrangement,
             showUtilities = showingUtilities,
             hasSuggestions = hasSuggestions(),
+            isDualBar = isDualBar(),
         )
         changed()
     }

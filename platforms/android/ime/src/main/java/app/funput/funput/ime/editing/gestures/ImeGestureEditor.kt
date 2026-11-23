@@ -25,6 +25,11 @@ internal class ImeGestureEditor(
             field = value
             if (!value) tracker.reset()
         }
+    var doubleSpacePeriodEnabled = true
+        set(value) {
+            field = value
+            if (!value) tracker.reset()
+        }
     private val tracker = SpaceTapTracker()
     private val pan = CaretPanResolver()
 
@@ -50,7 +55,7 @@ internal class ImeGestureEditor(
     fun onSelectionChanged(position: Int) = pan.onSelectionChanged(position)
 
     private fun applySmartSpace(): Boolean {
-        if (!enabled) return false
+        if (!enabled || !doubleSpacePeriodEnabled) return false
         if (!tracker.registerSpace()) return false
         val current = connection() ?: return false
         if (!current.getSelectedText(0).isNullOrEmpty()) return false

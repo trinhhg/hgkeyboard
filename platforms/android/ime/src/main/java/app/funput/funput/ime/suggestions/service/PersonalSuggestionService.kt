@@ -118,8 +118,23 @@ internal class PersonalSuggestionService(
 
     private fun publish(request: PersonalSuggestionRequest, values: List<String>) {
         if (request.generation != generation || request.session != session || request.prefix != prefix) return
-        candidates.receive(values, prefix)
+        val enriched = if (request.prefix.isEmpty() && values.size < 3) {
+            fillNextWordFallbacks(values, request.context)
+        } else {
+            values
+        }
+        candidates.receive(enriched, prefix)
         suggestionCounter("SuggestionQueryToToolbarUs", (System.nanoTime() - request.startedNanos) / 1_000)
+    }
+
+    private fun fillNextWordFallbacks(existing: List<String>, context: String?): List<String> {
+        val lastWord = context?.trim()?.substringAfterLast(' ')?.lowercase().orEmpty()
+        val pool = CommonFollowers[lastWord] ?: DefaultNextWords
+        val result = ArrayList<String>(3)
+        existing.forEach { if (result.size < 3 && it !in result) result.add(it) }
+        pool.forEach { if (result.size < 3 && it !in result) result.add(it) }
+        DefaultNextWords.forEach { if (result.size < 3 && it !in result) result.add(it) }
+        return result
     }
 
     /** Asks again for what the bar is answering. What it showed stays up, untappable, until the answer lands. */
@@ -148,3 +163,38 @@ internal class PersonalSuggestionService(
 
 /** The shortest prefix worth completing from the 1st typed character (Laban Key responsiveness). */
 private const val MinimumPrefix = 1
+
+private val DefaultNextWords = listOf("cho", "mà", "rồi", "và", "là", "có", "không", "để")
+
+private val CommonFollowers: Map<String, List<String>> = mapOf(
+    "của" to listOf("mình", "em", "anh"),
+    "và" to listOf("các", "nhiều", "một"),
+    "là" to listOf("một", "gì", "người"),
+    "có" to listOf("thể", "gì", "không"),
+    "không" to listOf("có", "biết", "phải"),
+    "được" to listOf("không", "rồi", "nhiều"),
+    "cho" to listOf("mình", "em", "anh"),
+    "với" to listOf("nhau", "mình", "ai"),
+    "các" to listOf("bạn", "mục", "loại"),
+    "những" to listOf("người", "điều", "cái"),
+    "này" to listOf("nha", "rồi", "luôn"),
+    "đã" to listOf("có", "làm", "xong"),
+    "khi" to listOf("nào", "đó", "mà"),
+    "thì" to listOf("sao", "có", "làm"),
+    "mà" to listOf("không", "vẫn", "còn"),
+    "nhưng" to listOf("mà", "không", "vẫn"),
+    "vì" to listOf("vậy", "sao", "mình"),
+    "nên" to listOf("không", "cần", "làm"),
+    "thật" to listOf("sự", "lòng", "tốt"),
+    "rất" to listOf("nhiều", "tốt", "vui"),
+    "một" to listOf("chút", "ít", "ngày"),
+    "người" to listOf("ta", "khác", "dùng"),
+    "đi" to listOf("chơi", "làm", "ăn"),
+    "đang" to listOf("làm", "đi", "ở"),
+    "mình" to listOf("đang", "cũng", "sẽ"),
+    "bạn" to listOf("có", "đang", "ơi"),
+    "anh" to listOf("ơi", "đang", "có"),
+    "em" to listOf("ơi", "đang", "có"),
+    "cũng" to listOf("được", "có", "không"),
+    "vẫn" to listOf("còn", "chưa", "đang"),
+)

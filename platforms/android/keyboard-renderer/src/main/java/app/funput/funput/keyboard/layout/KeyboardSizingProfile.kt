@@ -2,13 +2,14 @@ package app.funput.funput.keyboard.layout
 
 /** Density-independent keyboard geometry, scaled by a single user-chosen factor. */
 data class KeyboardSizingProfile(
-    val horizontalPaddingDp: Float = 6f,
-    val verticalPaddingDp: Float = 6f,
-    val horizontalGapRatio: Float = 0.11f,
-    val verticalGapRatio: Float = 0.16f,
+    val horizontalPaddingDp: Float = 4f,
+    val verticalPaddingDp: Float = 4f,
+    val horizontalGapRatio: Float = 0.095f,
+    val verticalGapRatio: Float = 0.13f,
     val keyAspectRatio: Float = DefaultKeyAspectRatio,
     val heightScale: Float = 1f,
-    val labelScale: Float = 0.96f,
+    val labelScale: Float = BaseLabelScale,
+    val bottomMarginDp: Float = 0f,
 ) {
     init {
         require(horizontalPaddingDp >= 0f) { "Horizontal padding must not be negative" }
@@ -18,65 +19,46 @@ data class KeyboardSizingProfile(
         require(keyAspectRatio > 0f) { "Key aspect ratio must be positive" }
         require(heightScale > 0f) { "Height scale must be positive" }
         require(labelScale > 0f) { "Label scale must be positive" }
+        require(bottomMarginDp >= 0f) { "Bottom margin must not be negative" }
     }
 
     companion object {
         /**
-         * Key width over row pitch, calibrated so 100% lands on Gboard's untouched default.
-         *
-         * Measured on a 1440x3200 phone at density 3.75 (384dp wide): Gboard rows sit on a 189.5px
-         * pitch, and at the previous 0.75 this keyboard produced 184px — about 3% short, which read
-         * as Funput being the smaller keyboard at the same nominal size. The slider still spans
-         * [MinScale]..[MaxScale] around this baseline.
+         * Calibrated for 20:9 displays (Vivo iQOO Neo 10) matching Laban Key (`~257dp` 5-row,
+         * `~206dp` 4-row) and SwiftKey proportions so VNI digits sit comfortably in thumb reach.
          */
-        const val DefaultKeyAspectRatio = 0.73f
+        const val DefaultKeyAspectRatio = 0.80f
 
         /** The range Settings offers. Portrait honors the full span; landscape phones stay capped. */
-        const val MinScale = 0.85f
-        const val MaxScale = 1.5f
-        const val DefaultScale = 1.08f
+        const val MinScale = 0.82f
+        const val MaxScale = 1.32f
+        const val DefaultScale = 1.0f
 
-        /**
-         * The tallest a keyboard is allowed to grow in landscape on a phone.
-         *
-         * A phone rotated on its side has far less height to spend than it does upright, so the
-         * ceiling here sits below even the old fixed default ("Large", 1.08) — the old default
-         * was tuned for portrait and was already tall for a landscape phone strip. Tablets keep
-         * their full landscape height because they have the height to spare; see
-         * [constrainedForLandscape].
-         */
-        const val PhoneLandscapeMaxScale = 0.92f
+        const val PhoneLandscapeMaxScale = 0.90f
 
         val Normal = scaled(1f)
 
         val Default: KeyboardSizingProfile = scaled(DefaultScale)
 
-        /**
-         * The profile for a height scale, clamped to the offered range.
-         *
-         * Labels follow the keys one for one: a key that grows by 8% with text that stays put
-         * reads as a key with too much padding rather than as a larger key.
-         */
-        fun scaled(scale: Float): KeyboardSizingProfile {
+        fun scaled(
+            scale: Float,
+            labelScale: Float = BaseLabelScale + (scale - 1f),
+            bottomMarginDp: Float = 0f,
+        ): KeyboardSizingProfile {
             val clamped = scale.coerceIn(MinScale, MaxScale)
             return KeyboardSizingProfile(
                 heightScale = clamped,
-                labelScale = BaseLabelScale + (clamped - 1f),
+                labelScale = labelScale.coerceIn(0.75f, 1.35f),
+                bottomMarginDp = bottomMarginDp.coerceIn(0f, 32f),
             )
         }
 
-        private const val BaseLabelScale = 0.96f
+        private const val BaseLabelScale = 0.94f
     }
 
-    /**
-     * This profile, or the phone-landscape ceiling if it would grow taller than that.
-     *
-     * Only a landscape phone is constrained — a tablet has the height to spare even sideways,
-     * and portrait always honors the full slider on both.
-     */
     fun constrainedForLandscape(isPhoneLandscape: Boolean): KeyboardSizingProfile =
         if (isPhoneLandscape && heightScale > PhoneLandscapeMaxScale) {
-            scaled(PhoneLandscapeMaxScale)
+            scaled(PhoneLandscapeMaxScale, labelScale = labelScale, bottomMarginDp = bottomMarginDp)
         } else {
             this
         }

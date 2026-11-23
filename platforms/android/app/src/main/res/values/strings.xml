@@ -333,4 +333,19 @@
     <string name="settings_enter_key_picker_clear">Xoá tìm kiếm</string>
     <string name="settings_enter_key_picker_loading">Đang tải danh sách ứng dụng</string>
     <string name="settings_enter_key_picker_empty">Không tìm thấy ứng dụng nào</string>
+    <string name="settings_toolbar_mode_title">Kiểu thanh công cụ</string>
+    <string name="settings_vni_accents_title">Gợi ý dấu thanh trên hàng số VNI</string>
+    <string name="settings_vni_accents_summary">Hiển thị dấu sắc, huyền, hỏi… mờ cạnh phím số 1–9 khi gõ VNI.</string>
+    <string name="settings_always_caps_title">Luôn viết HOA chữ trên phím</string>
+    <string name="settings_always_caps_summary">Hiển thị A B C in hoa cố định trên mặt bàn phím (kiểu Laban Key).</string>
+    <string name="settings_language_key_title">Phím đổi bàn phím (Quả cầu 🌐)</string>
+    <string name="settings_language_key_summary">Đặt phím chuyển bàn phím nhanh cạnh phím Cách.</string>
+    <string name="settings_comma_period_title">Phím phẩy và chấm (, .)</string>
+    <string name="settings_comma_period_summary">Hiển thị phím dấu phẩy và dấu chấm hai bên phím Cách.</string>
+    <string name="settings_key_label_size_title">Cỡ chữ trên bàn phím</string>
+    <string name="settings_bottom_margin_title">Khoảng đệm dưới đáy (màn 20:9)</string>
+    <string name="settings_double_space_period_title">Chạm 2 lần Space thành dấu chấm</string>
+    <string name="settings_double_space_period_summary">Nhấn nhanh 2 lần phím Cách để tự thêm “. ” cuối câu.</string>
+    <string name="settings_space_swipe_title">Vuốt ngang phím Cách</string>
+    <string name="settings_long_press_delay_title">Độ trễ nhấn giữ phím</string>
 </resources>

@@ -74,6 +74,7 @@ internal class KeyboardInteractionController(
         onFeedback = { onHapticFeedback(KeyboardHapticType.CONTROL) },
         onChanged = onVisualStateChanged, onSelected = alternateActions::dispatch,
     )
+    var longPressDelayMillis by alternateSelection::holdDelayMillis
     val shiftState: ShiftState get() = actionDispatcher.shiftState
     val alternatePreview: AlternateSelectionPreview? get() = alternateSelection.preview
     fun isPointerCaptured(pointerId: Int) =

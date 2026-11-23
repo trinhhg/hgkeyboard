@@ -24,15 +24,15 @@ internal class SpacebarContentRenderer(private val metrics: RenderMetrics) {
         language: KeyboardLanguage,
         customLabel: String? = null,
     ) {
-        val isLabanSpace = theme.accentColor == 0xFF2095F4.toInt()
+        val isLabanSpace = theme.spacebarOutlinedAccent
         val isLight = ((theme.backgroundStartColor shr 16) and 0xFF) > 0x80
         labelPaint.color = when {
-            isLabanSpace && isLight -> 0xFF1976D2.toInt()
+            isLabanSpace && isLight -> 0xFF546E7A.toInt()
             isLabanSpace -> 0xFF90CAF9.toInt()
             else -> theme.secondaryLabelColor
         }
         labelPaint.textSize = metrics.labelSp(LabelSizeSp, theme)
-        labelPaint.typeface = KeyLabelTypography.specialTypeface(theme)
+        labelPaint.typeface = KeyLabelTypography.characterTypeface(theme)
         labelPaint.getFontMetrics(fontMetrics)
         val centerX = key.bounds.centerX
         val centerY = key.bounds.centerY

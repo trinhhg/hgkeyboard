@@ -44,6 +44,8 @@ data class ResolvedSuggestionBar(
     val themeKey: ResolvedKey? = null,
     val settingsKey: ResolvedKey? = null,
     val toolbarToggleKey: ResolvedKey? = null,
+    /** Present in SwiftKey Dual-Bar mode: top utility strip bounds drawn with toolbarBackgroundColor. */
+    val toolbarRowBounds: KeyBounds? = null,
 )
 
 data class ResolvedKeyboard(

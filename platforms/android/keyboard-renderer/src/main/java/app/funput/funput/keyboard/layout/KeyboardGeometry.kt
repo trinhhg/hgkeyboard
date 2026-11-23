@@ -27,9 +27,13 @@ object KeyboardGeometry {
 
         val contentWidth = width - spec.horizontalPadding * 2f
         val hasSuggestionBar = layout.suggestionBar != null
-        val barHeight = if (hasSuggestionBar) spec.suggestionBarHeight else 0f
+        val barHeight = if (hasSuggestionBar) {
+            spec.toolbarRowHeight + spec.dualRowGap + spec.suggestionBarHeight
+        } else {
+            0f
+        }
         val barGap = if (hasSuggestionBar) spec.suggestionBarGap else 0f
-        val contentHeight = height - spec.verticalPadding * 2f - barHeight - barGap
+        val contentHeight = height - spec.verticalPadding * 2f - spec.bottomMargin - barHeight - barGap
         require(contentWidth > 0f && contentHeight > 0f) {
             "Keyboard size is too small for its geometry"
         }

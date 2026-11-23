@@ -88,6 +88,14 @@ data class KeyboardTheme(
     val labelScale: Float = 1f,
     /** Weight of character labels; modifier labels are drawn one step heavier. */
     val labelWeight: KeyboardLabelWeight = KeyboardLabelWeight.Default,
+    /** When false, Enter renders like an ordinary/icon key instead of a solid accent block. */
+    val enterUsesAccentPlate: Boolean = true,
+    /** When true, Spacebar uses an accent-tinted plate with a crisp border (Laban Key style). */
+    val spacebarOutlinedAccent: Boolean = false,
+    /** When true, secondary key hints sit centered above the main glyph (SwiftKey style). */
+    val centerSecondaryLabel: Boolean = false,
+    /** Optional toolbar surface color when dual-bar or top strip differs from keyboard ground. */
+    val toolbarBackgroundColor: Int = backgroundStartColor,
 ) {
     init {
         require(keyCornerRadiusDp >= 0f) { "Key corner radius must not be negative" }

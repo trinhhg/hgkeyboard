@@ -10,6 +10,8 @@ import app.funput.funput.ime.settings.ToneStyle
 import app.funput.funput.keyboard.KeyboardHapticStrength
 import app.funput.funput.keyboard.layout.KeyboardSizingProfile
 import app.funput.funput.keyboard.model.KeyboardInputMethod
+import app.funput.funput.keyboard.model.KeyboardToolbarMode
+import app.funput.funput.keyboard.model.SpaceSwipeBehavior
 import app.funput.funput.keyboard.placement.KeyboardPlacementMode
 import app.funput.funput.keyboard.placement.KeyboardPlacementPreferences
 import app.funput.funput.keyboard.placement.OneHandedSide
@@ -53,6 +55,14 @@ internal class SettingsScreenState(
     val onStylePresetSelected: (KeyboardStylePreset) -> Unit = {},
     val onSecondarySymbolsChanged: (Boolean) -> Unit = {},
     val onBottomEmojiKeyChanged: (Boolean) -> Unit = {},
+    val onToolbarModeSelected: (KeyboardToolbarMode) -> Unit = {},
+    val onVniAccentsChanged: (Boolean) -> Unit = {},
+    val onAlwaysCapitalizeLabelsChanged: (Boolean) -> Unit = {},
+    val onCommaPeriodKeysChanged: (Boolean) -> Unit = {},
+    val onLanguageSwitchKeyChanged: (Boolean) -> Unit = {},
+    val onDoubleSpacePeriodChanged: (Boolean) -> Unit = {},
+    val onSpaceSwipeBehaviorSelected: (SpaceSwipeBehavior) -> Unit = {},
+    val onLongPressDelayChanged: (Int) -> Unit = {},
     val onOpenAppearance: () -> Unit,
     val speechAvailable: Boolean = false,
     val onToneStyleSelected: (ToneStyle) -> Unit,

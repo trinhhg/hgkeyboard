@@ -44,35 +44,46 @@ object KeyboardLayouts {
             leadingRows = if (isCompact) {
                 emptyList()
             } else {
-                listOf(topNumberRowForLetters(inputMethod))
+                listOf(topNumberRowForLetters(inputMethod, styleOptions.showVniAccentsOnNumberRow))
             },
-            actionKeys = if (styleOptions.showBottomEmojiKey) swiftKeyActionKeys() else labanActionKeys(),
+            actionKeys = buildActionKeys(styleOptions),
             supportsVietnameseAlternates = true,
             showsTelexHints = inputMethod.isTelexFamily,
         )
         return CompactDigitAlternates.decorate(
             layout = layout,
-            decorateDigitsRow = isCompact,
+            decorateDigitsRow = isCompact && styleOptions.showSecondarySymbols,
             decorateSymbolRows = styleOptions.showSecondarySymbols,
         )
     }
 
-    /** 6-key SwiftKey bottom row: 123 | Emoji | , | < Hg > | . | Enter */
-    private fun swiftKeyActionKeys() = listOf(
-        specialKey("symbols", "123", KeyRole.SYMBOLS, 1.3f, "Ký hiệu"),
-        specialKey("action-emoji", "", KeyRole.EMOJI, 1.1f, "Biểu tượng cảm xúc"),
-        commaKey("comma"),
-        standardSpaceKey(widthWeight = 4.2f),
-        periodKey("period"),
-        specialKey("enter", "", KeyRole.ENTER, 1.4f, "Enter"),
-    )
-
-    /** 5-key Laban Key bottom row: ?123 | , | Hg | . | Enter */
-    private fun labanActionKeys() = listOf(
-        specialKey("symbols", "?123", KeyRole.SYMBOLS, 1.7f, "Ký hiệu"),
-        commaKey("comma"),
-        standardSpaceKey(widthWeight = 5.8f),
-        periodKey("period"),
-        specialKey("enter", "", KeyRole.ENTER, 1.7f, "Enter"),
-    )
+    private fun buildActionKeys(styleOptions: KeyboardStyleOptions): List<KeySpec> = buildList {
+        val hasEmoji = styleOptions.showBottomEmojiKey
+        val hasLang = styleOptions.showLanguageSwitchKey
+        val hasPunct = styleOptions.showCommaPeriodKeys
+        val symbolsLabel = if (hasEmoji || styleOptions.isDualBar) "123" else "?123"
+        val symbolsWeight = if (hasEmoji) 1.3f else 1.55f
+        add(specialKey("symbols", symbolsLabel, KeyRole.SYMBOLS, symbolsWeight, "Ký hiệu"))
+        if (hasEmoji) {
+            add(specialKey("action-emoji", "", KeyRole.EMOJI, 1.05f, "Biểu tượng cảm xúc"))
+        }
+        if (hasLang) {
+            add(specialKey("action-language", "", KeyRole.SYSTEM_INPUT_METHOD, 1.0f, "Đổi ngôn ngữ"))
+        }
+        if (hasPunct) {
+            add(commaKey("comma"))
+        }
+        val extraCount = (if (hasEmoji) 1 else 0) + (if (hasLang) 1 else 0)
+        val spaceWeight = when {
+            !hasPunct -> 6.8f - extraCount * 1.0f
+            extraCount >= 2 -> 3.4f
+            extraCount == 1 -> 4.35f
+            else -> 5.8f
+        }
+        add(standardSpaceKey(widthWeight = spaceWeight, swipeSwitchesLanguage = styleOptions.spaceSwipeSwitchesLanguage))
+        if (hasPunct) {
+            add(periodKey("period"))
+        }
+        add(specialKey("enter", "", KeyRole.ENTER, if (hasEmoji) 1.4f else 1.6f, "Enter"))
+    }
 }

@@ -80,6 +80,30 @@ internal fun rememberSettingsScreenState(
         onBottomEmojiKeyChanged = { enabled ->
             scope.launch { settings.styleStore.setBottomEmojiKey(enabled) }
         },
+        onToolbarModeSelected = { mode ->
+            scope.launch { settings.styleStore.setToolbarMode(mode) }
+        },
+        onVniAccentsChanged = { enabled ->
+            scope.launch { settings.styleStore.setVniAccentsOnNumberRow(enabled) }
+        },
+        onAlwaysCapitalizeLabelsChanged = { enabled ->
+            scope.launch { settings.styleStore.setAlwaysCapitalizeLabels(enabled) }
+        },
+        onCommaPeriodKeysChanged = { enabled ->
+            scope.launch { settings.styleStore.setCommaPeriodKeys(enabled) }
+        },
+        onLanguageSwitchKeyChanged = { enabled ->
+            scope.launch { settings.styleStore.setLanguageSwitchKey(enabled) }
+        },
+        onDoubleSpacePeriodChanged = { enabled ->
+            scope.launch { settings.styleStore.setDoubleSpacePeriodEnabled(enabled) }
+        },
+        onSpaceSwipeBehaviorSelected = { behavior ->
+            scope.launch { settings.styleStore.setSpaceSwipeBehavior(behavior) }
+        },
+        onLongPressDelayChanged = { delayMs ->
+            scope.launch { settings.styleStore.setLongPressDelayMs(delayMs) }
+        },
         onOpenAppearance = onOpenAppearance,
         speechAvailable = LocalResources.current.getBoolean(app.funput.funput.ime.R.bool.speech_feature_available),
         onToneStyleSelected = { style ->

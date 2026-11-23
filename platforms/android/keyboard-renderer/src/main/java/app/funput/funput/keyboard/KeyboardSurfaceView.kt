@@ -43,6 +43,7 @@ class KeyboardSurfaceView @JvmOverloads constructor(
         profile = { sizingProfile },
         utilitiesVisible = { suggestionState.utilityKeysVisible },
         hasSuggestions = { suggestionState.hasSuggestions },
+        isDualBar = { styleOptions.isDualBar },
         microphoneAllowed = { editorMode in listOf(KeyboardEditorMode.TEXT, KeyboardEditorMode.SEARCH, KeyboardEditorMode.URL) },
         changed = {
             suggestionState.geometryChanged()
@@ -53,7 +54,13 @@ class KeyboardSurfaceView @JvmOverloads constructor(
     var layoutMode: KeyboardLayoutMode by layoutState::layoutMode
     var editorMode: KeyboardEditorMode by layoutState::editorMode
     var layoutOverride: app.funput.funput.keyboard.model.KeyboardLayout? by layoutState::layoutOverride
-    var styleOptions: app.funput.funput.keyboard.model.KeyboardStyleOptions by layoutState::styleOptions
+    var styleOptions: app.funput.funput.keyboard.model.KeyboardStyleOptions
+        get() = layoutState.styleOptions
+        set(value) {
+            render.alwaysCapitalizeLabels = value.alwaysCapitalizeLabels
+            suggestionState.isDualBar = value.isDualBar
+            layoutState.styleOptions = value
+        }
     var suggestionBarEnabled: Boolean by layoutState::suggestionsEnabled
     var systemInputMethodSwitcherVisible: Boolean by layoutState::systemInputMethodSwitcherVisible
     var clipboardKeyVisible: Boolean by geometry::clipboardKeyVisible
@@ -69,6 +76,8 @@ class KeyboardSurfaceView @JvmOverloads constructor(
     var suggestions: List<SuggestionChip>
         get() = render.suggestions
         set(value) = suggestionState.update(value)
+    fun setTypingPresence(hasTextBeforeCursor: Boolean) =
+        suggestionState.updateTypingPresence(hasTextBeforeCursor)
     var clipboardHint: KeyboardClipboardHint?
         get() = render.clipboardHint
         set(value) { render.clipboardHint = value; accessibility.refresh() }
@@ -83,6 +92,7 @@ class KeyboardSurfaceView @JvmOverloads constructor(
         set(value) = interaction.setShiftState(value)
     var language: KeyboardLanguage get() = interaction.language; set(value) { interaction.language = value }
     var areSmartGesturesEnabled: Boolean get() = interaction.areSmartGesturesEnabled; set(value) { interaction.areSmartGesturesEnabled = value }
+    var longPressDelayMillis: Long get() = interaction.longPressDelayMillis; set(value) { interaction.longPressDelayMillis = value }
     private val resolvedKeyboard: ResolvedKeyboard? get() = geometry.keyboard
     private val accessibility: KeyboardSurfaceAccessibilityBinding = KeyboardSurfaceAccessibilityBinding(
         host = this,
@@ -126,7 +136,7 @@ class KeyboardSurfaceView @JvmOverloads constructor(
         set(value) = events.setEnabled(value)
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val size = measureKeyboardSurface(this, widthMeasureSpec, heightMeasureSpec,
-            inputMethod, editorMode, sizingProfile, showsNumberRow)
+            inputMethod, editorMode, sizingProfile, showsNumberRow, styleOptions.isDualBar)
         setMeasuredDimension(size.width, size.height)
     }
     override fun onSizeChanged(width: Int, height: Int, oldWidth: Int, oldHeight: Int) {

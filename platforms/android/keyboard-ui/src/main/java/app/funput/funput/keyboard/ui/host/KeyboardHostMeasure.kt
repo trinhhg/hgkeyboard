@@ -24,13 +24,14 @@ internal class KeyboardHostMeasure(
         editor: KeyboardEditorMode,
         profile: KeyboardSizingProfile,
         numberRow: Boolean,
+        isDualBar: Boolean = false,
     ): KeyboardHostSize {
         val density = host.resources.displayMetrics.density
         val defaultWidth = (KeyboardDimensions.DefaultWidthDp * density).roundToInt()
         val width = View.resolveSize(defaultWidth + safeArea.horizontalInset, widthSpec)
         val contentWidth = placement.resolveContentWidth(width - safeArea.horizontalInset)
         val heightDp = KeyboardDimensions.recommendedHeightDp(
-            method, editor, profile, contentWidth / density, numberRow,
+            method, editor, profile, contentWidth / density, numberRow, isDualBar,
         )
         val height = placement.resolveHeight((heightDp * density).roundToInt(), heightSpec)
         return KeyboardHostSize(

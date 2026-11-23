@@ -29,6 +29,8 @@ internal class AlternateSelectionController(
 
     private val sessions = mutableMapOf<Int, Session>()
     private var nextActivationOrder = 1L
+    var holdDelayMillis: Long = HoldDelayMillis
+        set(value) { field = value.coerceIn(150L, 700L) }
 
     val preview: AlternateSelectionPreview?
         get() = sessions.values.filter { it.layout != null }.maxByOrNull { it.activationOrder }?.let {
@@ -41,7 +43,7 @@ internal class AlternateSelectionController(
         if (key == null || key.alternates.isEmpty()) return
         val task = Runnable { activate(pointerId) }
         sessions[pointerId] = Session(key, x, y, task)
-        schedule(task, HoldDelayMillis)
+        schedule(task, holdDelayMillis)
     }
 
     fun move(pointerId: Int, keyId: String?, x: Float, y: Float) {

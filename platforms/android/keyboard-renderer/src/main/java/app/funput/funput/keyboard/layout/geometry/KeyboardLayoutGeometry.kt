@@ -19,13 +19,14 @@ internal fun KeyboardLayout.resolveGeometry(
     arrangement: ToolbarArrangement = ToolbarArrangement.Default,
     showUtilities: Boolean = true,
     hasSuggestions: Boolean = false,
+    isDualBar: Boolean = false,
 ): ResolvedKeyboard? {
     if (width <= 0 || height <= 0) return null
     return KeyboardGeometry.resolve(
         layout = this,
         width = width.toFloat(),
         height = height.toFloat(),
-        spec = KeyboardGeometrySpec.fromProfile(density, profile),
+        spec = KeyboardGeometrySpec.fromProfile(density, profile, isDualBar = isDualBar),
         showClipboard = showClipboard,
         showPlacement = showPlacement,
         microphone = microphone,

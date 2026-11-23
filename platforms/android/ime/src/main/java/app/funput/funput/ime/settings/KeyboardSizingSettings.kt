@@ -36,21 +36,28 @@ class KeyboardSizingSettings(context: Context) {
 }
 
 internal object KeyboardSizingSettingCodec {
-    fun encode(profile: KeyboardSizingProfile): String = profile.heightScale.toString()
+    fun encode(profile: KeyboardSizingProfile): String =
+        "${profile.heightScale}|${profile.labelScale}|${profile.bottomMarginDp}"
 
     /**
-     * Reads the stored height scale.
-     *
-     * The setting used to be one of three preset ids, so those still decode — an install that
-     * picked a size before the slider shipped keeps the size it was given.
+     * Reads stored height scale, label scale and bottom margin, backward-compatible with legacy
+     * `"compact"|"normal"|"large"` and single-float `"1.08"` values.
      */
     fun decode(value: String?): KeyboardSizingProfile = when (value) {
-        "compact" -> KeyboardSizingProfile.scaled(0.92f)
+        "compact" -> KeyboardSizingProfile.scaled(0.90f)
         "normal" -> KeyboardSizingProfile.scaled(1f)
         "large" -> KeyboardSizingProfile.scaled(1.08f)
-        else -> value?.toFloatOrNull()
-            ?.takeIf { it.isFinite() }
-            ?.let(KeyboardSizingProfile::scaled)
-            ?: KeyboardSizingSettings.DefaultProfile
+        else -> {
+            val parts = value?.split('|').orEmpty()
+            val height = parts.getOrNull(0)?.toFloatOrNull()?.takeIf { it.isFinite() }
+                ?: return KeyboardSizingSettings.DefaultProfile
+            val label = parts.getOrNull(1)?.toFloatOrNull()?.takeIf { it.isFinite() }
+            val margin = parts.getOrNull(2)?.toFloatOrNull()?.takeIf { it.isFinite() } ?: 0f
+            if (label != null) {
+                KeyboardSizingProfile.scaled(height, labelScale = label, bottomMarginDp = margin)
+            } else {
+                KeyboardSizingProfile.scaled(height, bottomMarginDp = margin)
+            }
+        }
     }
 }

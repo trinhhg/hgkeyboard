@@ -17,11 +17,12 @@ internal fun measureKeyboardSurface(
     editor: KeyboardEditorMode,
     profile: KeyboardSizingProfile,
     numberRow: Boolean,
+    isDualBar: Boolean = false,
 ): KeyboardSurfaceSize {
     val density = host.resources.displayMetrics.density
     val width = View.resolveSize((KeyboardDimensions.DefaultWidthDp * density).roundToInt(), widthSpec)
     val heightDp = KeyboardDimensions.recommendedHeightDp(
-        method, editor, profile, width / density, numberRow,
+        method, editor, profile, width / density, numberRow, isDualBar,
     )
     return KeyboardSurfaceSize(width, View.resolveSize((heightDp * density).roundToInt(), heightSpec))
 }

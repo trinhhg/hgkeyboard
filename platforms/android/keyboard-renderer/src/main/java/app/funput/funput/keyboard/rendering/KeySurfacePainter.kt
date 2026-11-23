@@ -54,14 +54,14 @@ internal class KeySurfacePainter(private val metrics: RenderMetrics) {
             canvas.drawRoundRect(drawingRect, radius, radius, fillPaint)
         }
         liquidPainter.draw(canvas, drawingRect, radius, isPressed)
-        val isLabanSpacebar = key.spec.role == KeyRole.SPACE && theme.accentColor == 0xFF2095F4.toInt()
+        val isLabanSpacebar = key.spec.role == KeyRole.SPACE && theme.spacebarOutlinedAccent
         if (hasBorder || isLabanSpacebar) {
             borderPaint.shader = if (theme.keySurfaceStyle != KeyboardKeySurfaceStyle.FLAT) {
                 glassPainter.borderShader(isPressed, isActivated)
             } else {
                 null
             }
-            borderPaint.strokeWidth = metrics.dp(if (isLabanSpacebar) 1.5f else theme.keyBorderWidthDp)
+            borderPaint.strokeWidth = metrics.dp(if (isLabanSpacebar) 1.2f else theme.keyBorderWidthDp)
             borderPaint.color = if (isLabanSpacebar) theme.accentColor else borderColor
             canvas.drawRoundRect(drawingRect, radius, radius, borderPaint)
         }
@@ -122,11 +122,12 @@ internal class KeySurfacePainter(private val metrics: RenderMetrics) {
     ): Int = when {
         isPressed -> theme.pressedKeyColor
         isActivated -> theme.activatedKeyColor
-        key.spec.role == KeyRole.SPACE && theme.accentColor == 0xFF2095F4.toInt() -> {
+        key.spec.role == KeyRole.SPACE && theme.spacebarOutlinedAccent -> {
             val isLight = ((theme.backgroundStartColor shr 16) and 0xFF) > 0x80
-            if (isLight) 0xFFE3F2FD.toInt() else 0xFF1A3552.toInt()
+            if (isLight) 0xFFDCEBFA.toInt() else 0xFF1A3552.toInt()
         }
-        key.spec.role == KeyRole.ENTER -> theme.accentKeyColor
+        key.spec.role == KeyRole.ENTER ->
+            if (theme.enterUsesAccentPlate) theme.accentKeyColor else theme.specialKeyColor
         key.spec.role.isSpecial -> theme.specialKeyColor
         else -> theme.keyColor
     }

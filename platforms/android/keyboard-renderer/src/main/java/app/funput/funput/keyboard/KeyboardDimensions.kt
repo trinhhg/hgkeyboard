@@ -17,7 +17,8 @@ object KeyboardDimensions {
         profile: KeyboardSizingProfile = KeyboardSizingProfile.Default,
         widthDp: Float = DefaultWidthDp,
         showsNumberRow: Boolean = true,
-    ): Float = baseRecommendedHeightDp(editorMode, profile, widthDp, inputMethod, showsNumberRow)
+        isDualBar: Boolean = false,
+    ): Float = baseRecommendedHeightDp(editorMode, profile, widthDp, inputMethod, showsNumberRow, isDualBar)
 
     internal fun baseRecommendedHeightDp(
         editorMode: KeyboardEditorMode,
@@ -25,26 +26,23 @@ object KeyboardDimensions {
         widthDp: Float = DefaultWidthDp,
         inputMethod: KeyboardInputMethod = KeyboardInputMethod.TELEX,
         showsNumberRow: Boolean = true,
+        isDualBar: Boolean = false,
     ): Float = when {
-        editorMode == KeyboardEditorMode.PIN -> heightForRowCount(4, false, profile, widthDp)
-        editorMode.usesKeypad -> heightForRowCount(4, true, profile, widthDp)
-        editorMode.isPassword -> heightForRowCount(5, false, profile, widthDp)
+        editorMode == KeyboardEditorMode.PIN -> heightForRowCount(4, false, profile, widthDp, isDualBar = false)
+        editorMode.usesKeypad -> heightForRowCount(4, true, profile, widthDp, isDualBar = isDualBar)
+        editorMode.isPassword -> heightForRowCount(5, false, profile, widthDp, isDualBar = false)
         else -> {
             val compact = usesCompactLetterRows(inputMethod, editorMode, showsNumberRow)
-            heightForRowCount(if (compact) 4 else 5, true, profile, widthDp)
+            heightForRowCount(if (compact) 4 else 5, true, profile, widthDp, isDualBar = isDualBar)
         }
     }
 
-    /**
-     * Matches [KeyboardGeometry] row-height cap so keypad rows fill the panel without a blank band.
-     * The whole panel scales by [KeyboardSizingProfile.heightScale]; the geometry spec scales its
-     * vertical dimensions by the same factor so the rows still fill it exactly.
-     */
     internal fun heightForRowCount(
         rowCount: Int,
         hasSuggestionBar: Boolean,
         profile: KeyboardSizingProfile = KeyboardSizingProfile.Default,
         widthDp: Float = DefaultWidthDp,
+        isDualBar: Boolean = false,
     ): Float {
         require(rowCount > 0) { "Row count must be positive" }
         val contentWidth = minOf(widthDp, DefaultWidthDp) - profile.horizontalPaddingDp * 2f
@@ -54,7 +52,11 @@ object KeyboardDimensions {
         val rowHeight = canonicalUnit / profile.keyAspectRatio
         val verticalGap = rowHeight * profile.verticalGapRatio
         val rowsBlockHeight = rowCount * rowHeight + (rowCount - 1) * verticalGap
-        val suggestionBarBlock = if (hasSuggestionBar) ToolbarMetrics.ChromeDp else 0f
-        return (profile.verticalPaddingDp * 2f + suggestionBarBlock + rowsBlockHeight) * profile.heightScale
+        val suggestionBarBlock = if (hasSuggestionBar) {
+            if (isDualBar) ToolbarMetrics.DualChromeDp else ToolbarMetrics.ChromeDp
+        } else {
+            0f
+        }
+        return (profile.verticalPaddingDp * 2f + suggestionBarBlock + rowsBlockHeight + profile.bottomMarginDp) * profile.heightScale
     }
 }

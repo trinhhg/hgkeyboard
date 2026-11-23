@@ -55,6 +55,12 @@ internal class KeyboardSurfaceRenderController(
 
     /** The user's "Xem trước phím"; the next press draws with it, so nothing needs redrawing now. */
     var keyPreviewsEnabled = true
+    var alwaysCapitalizeLabels = false
+        set(value) {
+            if (field == value) return
+            field = value
+            invalidate()
+        }
 
     init {
         renderer.updateSizing(sizingProfile)
@@ -87,6 +93,7 @@ internal class KeyboardSurfaceRenderController(
         language,
         enterAction,
         KeyPopupLayout.showsPreviews(secure = editorMode.isPassword, enabled = keyPreviewsEnabled),
+        alwaysCapitalizeLabels,
     )
 
     fun clear() {

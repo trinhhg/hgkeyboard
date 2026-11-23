@@ -101,7 +101,7 @@ private fun ToolbarSlotRow(
     FunputRow(
         title = stringResource(ToolbarSlotLabels.title(slot)),
         icon = ToolbarSlotLabels.icon(slot),
-        tint = if (isVisible) FunputTint.BLUE else FunputTint.SLATE,
+        tint = if (isVisible) FunputTint.BLUE else FunputTint.GRAY,
         accessory = {
             Row(horizontalArrangement = Arrangement.spacedBy(FunputUi.spacing.tight), verticalAlignment = Alignment.CenterVertically) {
                 TextAction(

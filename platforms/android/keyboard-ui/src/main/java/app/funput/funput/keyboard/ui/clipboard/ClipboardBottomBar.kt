@@ -1,5 +1,7 @@
 package app.funput.funput.keyboard.ui.clipboard
 
+import android.graphics.BitmapFactory
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,10 +17,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.disabled
@@ -104,16 +109,16 @@ internal fun ClipboardPreviewOverlay(
             Modifier.padding(20.dp).background(Color(surface)).padding(16.dp)
                 .clickable {},
         ) {
-            val previewBitmap = androidx.compose.runtime.remember(entry.imagePath) {
+            val previewBitmap = remember(entry.imagePath) {
                 entry.imagePath?.let { path ->
-                    runCatching { android.graphics.BitmapFactory.decodeFile(path)?.let { bmp -> bmp } }.getOrNull()
+                    runCatching { BitmapFactory.decodeFile(path)?.asImageBitmap() }.getOrNull()
                 }
             }
             if (previewBitmap != null) {
-                androidx.compose.foundation.Image(
-                    bitmap = androidx.compose.ui.graphics.asImageBitmap(previewBitmap),
+                Image(
+                    bitmap = previewBitmap,
                     contentDescription = entry.text,
-                    contentScale = androidx.compose.ui.layout.ContentScale.Fit,
+                    contentScale = ContentScale.Fit,
                     modifier = Modifier.heightIn(max = 170.dp),
                 )
             } else {

@@ -76,6 +76,7 @@ class ClipboardHistoryStore private constructor(
     fun remove(id: UUID, now: Instant = Instant.now()): List<ClipboardEntry> =
         synchronized(lock) {
             val current = read()
+            current.items.firstOrNull { it.id == id }?.let(::deleteImageFile)
             val items = prune(current.items.filter { it.id != id }, now)
             persistedItems(current, current.copy(items = items), now)
         }
@@ -84,6 +85,7 @@ class ClipboardHistoryStore private constructor(
     fun clear() { clearPersisted() }
 
     internal fun clearPersisted(): Boolean = synchronized(lock) {
+        read().items.forEach(::deleteImageFile)
         write(ClipboardHistoryPayload.Empty)
     }
 
@@ -97,8 +99,19 @@ class ClipboardHistoryStore private constructor(
         capturedToken: (ClipboardHistoryPayload) -> String?,
     ): List<ClipboardEntry> = synchronized(lock) {
         val current = read()
-        val items = prune(listOf(entry) + current.items.filter { it.text != entry.text }, now)
+        val deduped = current.items.filterNot { existing ->
+            if (entry.imagePath != null) {
+                existing.imagePath != null && existing.sourceToken == entry.sourceToken
+            } else {
+                existing.imagePath == null && existing.text == entry.text
+            }
+        }
+        val items = prune(listOf(entry) + deduped, now)
         persistedItems(current, ClipboardHistoryPayload(capturedToken(current), items), now)
+    }
+
+    private fun deleteImageFile(entry: ClipboardEntry) {
+        entry.imagePath?.let { path -> runCatching { File(path).delete() } }
     }
 
     private fun write(payload: ClipboardHistoryPayload) = runCatching {

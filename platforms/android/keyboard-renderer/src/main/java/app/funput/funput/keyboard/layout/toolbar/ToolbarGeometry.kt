@@ -31,23 +31,17 @@ internal object ToolbarGeometry {
     ): ResolvedSuggestionBar? {
         val bar = layout.suggestionBar ?: return null
         val top = spec.verticalPadding
-        if (spec.isDualBar) {
-            return resolveDualBar(
-                bar = bar,
-                width = width,
-                spec = spec,
-                top = top,
-                showClipboard = showClipboard,
-                showPlacement = showPlacement,
-                microphone = microphone,
-                arrangement = arrangement,
-                showUtilities = showUtilities,
-            )
-        }
         val bottom = top + spec.suggestionBarHeight
         val cell = spec.suggestionBarHeight
         val ordered = arrangement.normalize(
-            availableSlots(bar, showClipboard, showPlacement, microphone.visible, showUtilities),
+            availableSlots(
+                bar = bar,
+                showClipboard = showClipboard,
+                showPlacement = showPlacement,
+                microphoneVisible = microphone.visible,
+                showUtilities = showUtilities,
+                hidden = arrangement.hidden,
+            ),
         )
         val placed = linkedMapOf<ToolbarSlot, KeyBounds>()
         var left = spec.horizontalPadding
@@ -189,6 +183,8 @@ internal object ToolbarGeometry {
         },
         themeKey = placed[ToolbarSlot.THEME]?.let { ResolvedKey(requireNotNull(bar.themeKey), it) },
         settingsKey = placed[ToolbarSlot.SETTINGS]?.let { ResolvedKey(requireNotNull(bar.settingsKey), it) },
+        numpadKey = placed[ToolbarSlot.NUMPAD]?.let { ResolvedKey(requireNotNull(bar.numpadKey), it) },
+        shortcutsKey = placed[ToolbarSlot.SHORTCUTS]?.let { ResolvedKey(requireNotNull(bar.shortcutsKey), it) },
         toolbarToggleKey = toggleKey,
         suggestionsEnabled = bar.suggestionsEnabled,
         toolbarRowBounds = toolbarRowBounds,
@@ -218,6 +214,7 @@ internal object ToolbarGeometry {
         showPlacement: Boolean,
         microphoneVisible: Boolean,
         showUtilities: Boolean,
+        hidden: Set<ToolbarSlot> = emptySet(),
     ) = buildSet {
         add(ToolbarSlot.EMOJI)
         if (microphoneVisible && bar.microphoneKey != null) add(ToolbarSlot.MICROPHONE)
@@ -225,7 +222,9 @@ internal object ToolbarGeometry {
         if (showUtilities && bar.settingsKey != null) add(ToolbarSlot.SETTINGS)
         if (showPlacement) add(ToolbarSlot.PLACEMENT)
         if (showClipboard && bar.clipboardKey != null) add(ToolbarSlot.CLIPBOARD)
-    }
+        if (showUtilities && bar.numpadKey != null) add(ToolbarSlot.NUMPAD)
+        if (showUtilities && bar.shortcutsKey != null) add(ToolbarSlot.SHORTCUTS)
+    } - (hidden - ToolbarSlot.EMOJI)
 
     private fun placeLeading(
         slot: ToolbarSlot, cell: Float, top: Float, bottom: Float, spec: KeyboardGeometrySpec,

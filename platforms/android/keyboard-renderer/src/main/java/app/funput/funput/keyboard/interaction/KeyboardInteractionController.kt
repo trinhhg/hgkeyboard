@@ -66,6 +66,16 @@ internal class KeyboardInteractionController(
         utilities.dispatch(KeyboardUtilityAction.CLIPBOARD_PANEL)
         onHapticFeedback(KeyboardHapticType.CONTROL)
     }
+    private val inputMethodHold = ClipboardKeyHold(
+        schedule = schedule,
+        cancel = cancel,
+        touchSlop = touchSlop,
+        targetRole = KeyRole.SYSTEM_INPUT_METHOD,
+    ) { pointerId ->
+        onPointerCaptured(pointerId)
+        utilities.dispatch(KeyboardUtilityAction.INPUT_METHOD_PICKER)
+        onHapticFeedback(KeyboardHapticType.CONTROL)
+    }
     var areSmartGesturesEnabled by gestures::enabled
     var breaksLineOnEnterHold by gestures::breaksLineOnEnterHold
     private val alternateSelection = AlternateSelectionController(
@@ -79,7 +89,7 @@ internal class KeyboardInteractionController(
     val alternatePreview: AlternateSelectionPreview? get() = alternateSelection.preview
     fun isPointerCaptured(pointerId: Int) =
         alternateSelection.isCaptured(pointerId) || gestures.isCaptured(pointerId) ||
-            clipboardHold.isClaimed(pointerId)
+            clipboardHold.isClaimed(pointerId) || inputMethodHold.isClaimed(pointerId)
     var language: KeyboardLanguage = KeyboardLanguage.VIETNAMESE
         private set
     fun onPointerStarted(pointerId: Int, keyId: String?, x: Float, y: Float) {
@@ -89,12 +99,14 @@ internal class KeyboardInteractionController(
         alternateSelection.start(pointerId, key, x, y)
         gestures.onStarted(pointerId, key, x, y)
         clipboardHold.start(pointerId, key, x, y)
+        inputMethodHold.start(pointerId, key, x, y)
     }
     fun onPointerKeyChanged(pointerId: Int, keyId: String?) {
         backspaceRepeat.update(pointerId, keyId != null && keySpec(keyId)?.role == KeyRole.BACKSPACE)
     }
     fun onPointerMoved(pointerId: Int, keyId: String?, x: Float, y: Float) {
         clipboardHold.moved(pointerId, x, y)
+        inputMethodHold.moved(pointerId, x, y)
         if (!gestures.onMoved(pointerId, x, y)) alternateSelection.move(pointerId, keyId, x, y)
     }
     fun onKeyReleased(pointerId: Int, keyId: String?, x: Float, y: Float, eventTimeMillis: Long) {
@@ -102,15 +114,15 @@ internal class KeyboardInteractionController(
             forgetPointer(pointerId); return
         }
         if (gestures.onReleased(pointerId)) {
-            swipeGestures.forget(pointerId); clipboardHold.finish(pointerId); return
+            swipeGestures.forget(pointerId); clipboardHold.finish(pointerId); inputMethodHold.finish(pointerId); return
         }
-        if (clipboardHold.finish(pointerId)) {
+        if (clipboardHold.finish(pointerId) || inputMethodHold.finish(pointerId)) {
             swipeGestures.forget(pointerId); return
         }
         val key = keyId?.let(keySpec)
         val swipeAction = swipeGestures.finish(pointerId, x, y)
         if (backspaceRepeat.finish(pointerId, key?.role == KeyRole.BACKSPACE)) return
-        if (swipeAction == KeySwipeAction.TOGGLE_LANGUAGE) {
+        if (swipeAction == KeySwipeAction.TOGGLE_LANGUAGE || key?.role == KeyRole.SYSTEM_INPUT_METHOD) {
             setLanguage(language.toggled()); actionDispatcher.toggleLanguage(language)
         } else {
             utilityActions.dispatch(keyId, key, keyId?.let(suggestionSelection)) {
@@ -142,10 +154,10 @@ internal class KeyboardInteractionController(
     fun setShiftState(value: ShiftState) = actionDispatcher.setShiftState(value)
     fun cancel() {
         alternateSelection.cancelAll(); backspaceRepeat.cancelAll()
-        swipeGestures.cancel(); gestures.cancelAll(); clipboardHold.cancelAll()
+        swipeGestures.cancel(); gestures.cancelAll(); clipboardHold.cancelAll(); inputMethodHold.cancelAll()
     }
     fun reset() { cancel(); actionDispatcher.reset() }
     private fun forgetPointer(id: Int) {
-        swipeGestures.forget(id); gestures.forget(id); clipboardHold.finish(id)
+        swipeGestures.forget(id); gestures.forget(id); clipboardHold.finish(id); inputMethodHold.finish(id)
     }
 }

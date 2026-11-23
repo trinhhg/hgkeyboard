@@ -57,6 +57,8 @@ data class SuggestionBarSpec(
     val microphoneKey: KeySpec? = null,
     val themeKey: KeySpec? = null,
     val settingsKey: KeySpec? = null,
+    val numpadKey: KeySpec? = null,
+    val shortcutsKey: KeySpec? = null,
     val toolbarToggleKey: KeySpec? = null,
 ) {
     init {
@@ -76,6 +78,12 @@ data class SuggestionBarSpec(
         }
         require(settingsKey == null || settingsKey.role == KeyRole.SETTINGS) {
             "Toolbar settings action must be a settings key"
+        }
+        require(numpadKey == null || numpadKey.role == KeyRole.NUMPAD) {
+            "Toolbar numpad action must be a numpad key"
+        }
+        require(shortcutsKey == null || shortcutsKey.role == KeyRole.SHORTCUTS) {
+            "Toolbar shortcuts action must be a shortcuts key"
         }
         require(toolbarToggleKey == null || toolbarToggleKey.role == KeyRole.TOOLBAR_TOGGLE) {
             "Toolbar toggle action must be a toggle key"
@@ -99,6 +107,8 @@ data class KeyboardLayout(
             suggestionBar?.microphoneKey?.let { add(it.id) }
             suggestionBar?.themeKey?.let { add(it.id) }
             suggestionBar?.settingsKey?.let { add(it.id) }
+            suggestionBar?.numpadKey?.let { add(it.id) }
+            suggestionBar?.shortcutsKey?.let { add(it.id) }
             suggestionBar?.emojiKey?.let { add(it.id) }
             suggestionBar?.placementKey?.let { add(it.id) }
             suggestionBar?.systemInputMethodKey?.let { add(it.id) }

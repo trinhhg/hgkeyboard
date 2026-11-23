@@ -7,6 +7,7 @@ package app.funput.funput.keyboard.layout.toolbar
 data class ToolbarArrangement(
     val leading: List<ToolbarSlot>,
     val trailing: List<ToolbarSlot>,
+    val hidden: Set<ToolbarSlot> = DefaultHidden,
 ) {
     /**
      * Drops unavailable slots, keeps the first occurrence of each role, and restores any missing
@@ -21,14 +22,17 @@ data class ToolbarArrangement(
             if (!seen.add(slot)) return@forEach
             if (slot in Default.leading) nextLeading += slot else nextTrailing += slot
         }
-        return ToolbarArrangement(nextLeading, nextTrailing)
+        return ToolbarArrangement(nextLeading, nextTrailing, hidden.intersect(ToolbarSlot.entries.toSet()))
     }
 
     companion object {
+        val DefaultHidden: Set<ToolbarSlot> = setOf(ToolbarSlot.NUMPAD, ToolbarSlot.SHORTCUTS)
+
         /** Laban/SwiftKey 6-icon utility toolbar: Mic, Theme, Settings on left; Clipboard, Placement, Emoji on right. */
         val Default = ToolbarArrangement(
             leading = listOf(ToolbarSlot.MICROPHONE, ToolbarSlot.THEME, ToolbarSlot.SETTINGS),
             trailing = listOf(ToolbarSlot.CLIPBOARD, ToolbarSlot.PLACEMENT, ToolbarSlot.EMOJI),
+            hidden = DefaultHidden,
         )
     }
 }

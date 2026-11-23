@@ -1,8 +1,14 @@
 package app.funput.funput.ime.lifecycle
 
+import android.content.ClipDescription
 import android.content.Context
 import android.view.inputmethod.InputConnection
+import androidx.core.content.FileProvider
+import androidx.core.view.inputmethod.EditorInfoCompat
+import androidx.core.view.inputmethod.InputConnectionCompat
+import androidx.core.view.inputmethod.InputContentInfoCompat
 import app.funput.funput.ime.ImeEditingSession
+import java.io.File
 import app.funput.funput.ime.clipboard.session.ImeClipboardSession
 import app.funput.funput.ime.editing.AndroidCompositionSession
 import app.funput.funput.ime.editing.ImeEditorRuntime
@@ -67,6 +73,40 @@ internal fun createImeEditingSession(
         context = context,
         scope = scope,
         commitText = actionHandler::onClipboardSelected,
+        commitImage = { imagePath ->
+            val ic = connection()
+            val info = editorRuntime.currentEditorInfo
+            val file = File(imagePath)
+            if (ic == null || info == null || !file.exists()) {
+                false
+            } else {
+                val accepts = EditorInfoCompat.getContentMimeTypes(info).any { mime ->
+                    mime.equals("image/*", ignoreCase = true) ||
+                        mime.equals("image/jpeg", ignoreCase = true) ||
+                        mime.equals("*/*", ignoreCase = true)
+                }
+                if (!accepts) {
+                    false
+                } else {
+                    runCatching {
+                        val authority = "${context.packageName}.clipboard_images"
+                        val uri = FileProvider.getUriForFile(context, authority, file)
+                        val content = InputContentInfoCompat(
+                            uri,
+                            ClipDescription("Hg Clipboard Image", arrayOf("image/jpeg")),
+                            null,
+                        )
+                        InputConnectionCompat.commitContent(
+                            ic,
+                            info,
+                            content,
+                            InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION,
+                            null,
+                        )
+                    }.getOrDefault(false)
+                }
+            }
+        },
         afterCommit = { suggestionService.consume(actionHandler.takeSuggestionUpdate()) },
         preparePanel = {
             actionHandler.finish()

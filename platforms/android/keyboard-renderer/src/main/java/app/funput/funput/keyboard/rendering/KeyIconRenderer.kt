@@ -42,6 +42,8 @@ internal class KeyIconRenderer(metrics: RenderMetrics) {
             KeyRole.EMOJI -> utilityIcons.drawEmoji(canvas, key)
             KeyRole.THEME -> utilityIcons.drawTheme(canvas, key)
             KeyRole.SETTINGS -> utilityIcons.drawSettings(canvas, key)
+            KeyRole.NUMPAD -> if (key.spec.label.isEmpty()) utilityIcons.drawNumpad(canvas, key) else return false
+            KeyRole.SHORTCUTS -> utilityIcons.drawShortcuts(canvas, key)
             KeyRole.TOOLBAR_TOGGLE -> utilityIcons.drawToolbarToggle(canvas, key)
             else -> return false
         }

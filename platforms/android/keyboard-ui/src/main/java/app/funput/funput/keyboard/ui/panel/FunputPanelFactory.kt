@@ -41,6 +41,7 @@ internal class FunputPanelFactory(
         onClearAll = callbacks::dispatchClipboardClear
         onDelete = { callbacks.dispatch(KeyAction.Backspace) }
         onReturn = showLetters
+        onOpenSettings = callbacks::dispatchSettingsRequest
     }
 
     fun createTheme() = ThemePanelView(context).apply {

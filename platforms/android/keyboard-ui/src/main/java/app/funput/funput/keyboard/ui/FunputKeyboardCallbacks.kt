@@ -24,6 +24,7 @@ class FunputKeyboardCallbacks {
     var onEmojiSelected: ((String) -> Unit)? = null
     var onClipboardPasteRequested: (() -> Unit)? = null
     var onClipboardPanelOpened: (() -> Unit)? = null
+    var onShortcutsPanelRequested: (() -> Unit)? = null
     var onClipboardEntrySelected: ((KeyboardClipboardEntry) -> Unit)? = null
     var onShortcutEntrySelected: ((KeyboardShortcutEntry) -> Unit)? = null
     var onClipboardPinToggled: ((KeyboardClipboardEntry) -> Unit)? = null
@@ -71,6 +72,7 @@ class FunputKeyboardCallbacks {
     }
 
     internal fun dispatchClipboardPanelOpened() { onClipboardPanelOpened?.invoke() }
+    internal fun dispatchShortcutsPanelRequest() { onShortcutsPanelRequested?.invoke() }
     internal fun dispatchClipboardEntry(entry: KeyboardClipboardEntry) { onClipboardEntrySelected?.invoke(entry) }
     internal fun dispatchShortcutEntry(entry: KeyboardShortcutEntry) { onShortcutEntrySelected?.invoke(entry) }
     internal fun dispatchClipboardPin(entry: KeyboardClipboardEntry) { onClipboardPinToggled?.invoke(entry) }

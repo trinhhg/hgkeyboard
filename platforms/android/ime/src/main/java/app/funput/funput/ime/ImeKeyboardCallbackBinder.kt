@@ -26,7 +26,7 @@ internal object ImeKeyboardCallbackBinder {
         onInputMethodSwitchRequested = {
             handler.finish()
             suggestions.finish()
-            switcher.switch()
+            switcher.showPicker()
         }
         onEmojiSelected = handler::onEmojiSelected
         onPanelChanged = { panel ->

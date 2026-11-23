@@ -348,4 +348,14 @@
     <string name="settings_double_space_period_summary">Nhấn nhanh 2 lần phím Cách để tự thêm “. ” cuối câu.</string>
     <string name="settings_space_swipe_title">Vuốt ngang phím Cách</string>
     <string name="settings_long_press_delay_title">Độ trễ nhấn giữ phím</string>
+    <string name="settings_toolbar_slot_numpad">Bàn phím số (1234)</string>
+    <string name="settings_toolbar_slot_shortcuts">Gõ tắt</string>
+    <string name="settings_toolbar_slot_visible">Hiện</string>
+    <string name="settings_toolbar_slot_hidden">Ẩn</string>
+    <string name="settings_toolbar_slot_fixed">Luôn hiện</string>
+    <string name="settings_clipboard_capture_images_title">Lưu ảnh vào bảng nhớ tạm</string>
+    <string name="settings_clipboard_capture_images_summary">Tự động lưu ảnh và ảnh chụp màn hình đã chép (kiểu SwiftKey)</string>
+    <string name="settings_test_keyboard_title">Thử bàn phím</string>
+    <string name="settings_test_keyboard_hint">Gõ thử ngay để kiểm tra giao diện, toolbar và gợi ý từ…</string>
+    <string name="settings_test_keyboard_close">Đóng</string>
 </resources>

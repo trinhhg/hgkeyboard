@@ -9,6 +9,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import app.funput.funput.ime.settings.layout.ToolbarLayoutPreferences
 import app.funput.funput.ime.settings.layout.ToolbarLayoutSettings
+import app.funput.funput.keyboard.layout.toolbar.ToolbarSlot
 import kotlinx.coroutines.launch
 
 /** What the toolbar-layout section shows and the edits it can apply. */
@@ -18,6 +19,7 @@ internal class ToolbarLayoutSectionState(
     val onMoveUp: (ToolbarSide, Int) -> Unit,
     val onMoveDown: (ToolbarSide, Int) -> Unit,
     val onMoveToOtherSide: (ToolbarSide, Int) -> Unit,
+    val onToggleVisibility: (ToolbarSlot) -> Unit = {},
 ) {
     companion object {
         val Inert = ToolbarLayoutSectionState(
@@ -25,6 +27,7 @@ internal class ToolbarLayoutSectionState(
             onMoveUp = { _, _ -> },
             onMoveDown = { _, _ -> },
             onMoveToOtherSide = { _, _ -> },
+            onToggleVisibility = {},
         )
     }
 }
@@ -46,5 +49,6 @@ internal fun rememberToolbarLayoutSectionState(): ToolbarLayoutSectionState {
         onMoveToOtherSide = { side, index ->
             write { ToolbarLayoutEdits.moveToOtherSide(it, side, index) }
         },
+        onToggleVisibility = { slot -> write { ToolbarLayoutEdits.toggleVisibility(it, slot) } },
     )
 }

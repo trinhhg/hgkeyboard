@@ -7,10 +7,12 @@ enum class ToolbarSlot {
     SETTINGS,
     CLIPBOARD,
     PLACEMENT,
+    NUMPAD,
+    SHORTCUTS,
     EMOJI,
     ;
 
     /** Required slots keep their place when the row is tight; optional ones yield. */
     val yieldsWhenNarrow: Boolean
-        get() = this == PLACEMENT || this == CLIPBOARD || this == THEME || this == SETTINGS
+        get() = this != EMOJI && this != MICROPHONE
 }

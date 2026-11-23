@@ -1,10 +1,10 @@
 package app.funput.funput.keyboard.layout.symbols
 
-/** Gboard-ordered symbol labels for Telex compact layouts, followed by Funput-only glyphs. */
+/** Laban Key 4-row symbol labels for compact layouts (`_` on bottom action row next to `.`). */
 internal object CompactSymbolPageContent {
-    val primaryMiddle = listOf("@", "#", "₫", "_", "&", "-", "+", "(", ")", "/")
+    val primaryMiddle = listOf("@", "#", "₫", "%", "&", "-", "+", "(", ")", "/")
     val primaryBottom = listOf("*", "\"", "'", ":", ";", "!", "?")
-    val secondaryTop = listOf("~", "`", "|", "•", "÷", "×", "£", "€", "$", "^")
-    val secondaryMiddle = listOf("°", "=", "{", "}", "\\", "%", "©", "[", "]", "…")
-    val secondaryBottom = listOf("<", ">", "¥", "≠", "±", "≤", "≥")
+    val secondaryTop = listOf("~", "`", "|", "•", "√", "π", "÷", "×", "¶", "∆")
+    val secondaryMiddle = listOf("$", "€", "£", "¥", "¢", "^", "°", "=", "{", "}")
+    val secondaryBottom = listOf("\\", "©", "®", "™", "[", "]", "…")
 }

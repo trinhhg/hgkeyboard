@@ -59,32 +59,25 @@ object KeyboardLayouts {
     }
 
     private fun buildActionKeys(styleOptions: KeyboardStyleOptions): List<KeySpec> = buildList {
-        val hasEmoji = styleOptions.showBottomEmojiKey
         val hasLang = styleOptions.showLanguageSwitchKey
         val hasPunct = styleOptions.showCommaPeriodKeys
-        val symbolsLabel = if (hasEmoji || styleOptions.isDualBar) "123" else "?123"
-        val symbolsWeight = if (hasEmoji) 1.3f else 1.55f
-        add(specialKey("symbols", symbolsLabel, KeyRole.SYMBOLS, symbolsWeight, "Ký hiệu"))
-        if (hasEmoji) {
-            add(specialKey("action-emoji", "", KeyRole.EMOJI, 1.05f, "Biểu tượng cảm xúc"))
-        }
+        add(specialKey("symbols", "?123", KeyRole.SYMBOLS, 1.55f, "Ký hiệu"))
         if (hasLang) {
             add(specialKey("action-language", "", KeyRole.SYSTEM_INPUT_METHOD, 1.0f, "Đổi ngôn ngữ"))
         }
         if (hasPunct) {
             add(commaKey("comma"))
         }
-        val extraCount = (if (hasEmoji) 1 else 0) + (if (hasLang) 1 else 0)
         val spaceWeight = when {
-            !hasPunct -> 6.8f - extraCount * 1.0f
-            extraCount >= 2 -> 3.4f
-            extraCount == 1 -> 4.35f
+            !hasPunct && hasLang -> 5.8f
+            !hasPunct -> 6.8f
+            hasLang -> 4.35f
             else -> 5.8f
         }
         add(standardSpaceKey(widthWeight = spaceWeight, swipeSwitchesLanguage = styleOptions.spaceSwipeSwitchesLanguage))
         if (hasPunct) {
             add(periodKey("period"))
         }
-        add(specialKey("enter", "", KeyRole.ENTER, if (hasEmoji) 1.4f else 1.6f, "Enter"))
+        add(specialKey("enter", "", KeyRole.ENTER, 1.6f, "Enter"))
     }
 }

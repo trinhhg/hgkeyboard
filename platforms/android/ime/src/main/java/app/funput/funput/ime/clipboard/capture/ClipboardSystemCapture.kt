@@ -39,6 +39,7 @@ internal class ClipboardSystemCapture(
     private var editorMode = KeyboardEditorMode.TEXT
     private val observation = ClipboardObservationSlot()
     private var captureJob: Job? = null
+    private var lastImageSourceToken: String? = null
 
     init {
         scope.launch {
@@ -90,10 +91,31 @@ internal class ClipboardSystemCapture(
         captureJob = scope.launch {
             val read = withContext(ioDispatcher) { gateway.readText(maxTextLength) }
             if (!shouldCapture() || captureStore !== store) return@launch
-            if (read !is ClipboardReadResult.Success || read.isSensitive) return@launch
+            if (read is ClipboardReadResult.Success && !read.isSensitive) {
+                withContext(ioDispatcher) {
+                    if (!shouldCapture() || captureStore !== store) return@withContext
+                    captureStore.recordCopy(ClipboardEntry(text = read.text, sourceToken = read.sourceToken))
+                }
+                if (shouldCapture() && captureStore === store) onRecorded()
+                return@launch
+            }
+            if (!prefs.captureImages) return@launch
+            val snap = withContext(ioDispatcher) { gateway.snapshot() }
+            if (snap == null || snap.isSensitive) return@launch
+            if (snap.sourceToken != null && snap.sourceToken == lastImageSourceToken) return@launch
+            val image = withContext(ioDispatcher) { gateway.readImage() } ?: return@launch
+            if (!shouldCapture() || captureStore !== store) return@launch
+            if (image.sourceToken == lastImageSourceToken) return@launch
+            lastImageSourceToken = image.sourceToken
             withContext(ioDispatcher) {
                 if (!shouldCapture() || captureStore !== store) return@withContext
-                captureStore.recordCopy(ClipboardEntry(text = read.text, sourceToken = read.sourceToken))
+                captureStore.recordCopy(
+                    ClipboardEntry(
+                        text = "Hình ảnh",
+                        sourceToken = image.sourceToken,
+                        imagePath = image.imagePath,
+                    ),
+                )
             }
             if (shouldCapture() && captureStore === store) onRecorded()
         }

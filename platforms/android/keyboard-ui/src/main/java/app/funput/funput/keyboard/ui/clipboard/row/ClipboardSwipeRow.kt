@@ -105,6 +105,23 @@ internal fun ClipboardSwipeRow(
         ) {
             ClipboardRowTextContent(entry, preview, now, palette, Modifier.weight(1f))
             ClipboardPinAction(entry.isPinned, pinLabel, palette, onPin)
+            InlineDeleteAction(deleteLabel, palette, onRemove)
+        }
+    }
+}
+
+@Composable
+private fun InlineDeleteAction(label: String, palette: KeyboardPanelPalette, onClick: () -> Unit) {
+    val color = palette.readable(palette.secondaryLabel)
+    Box(
+        Modifier.width(38.dp).fillMaxHeight().semantics { contentDescription = label; role = Role.Button }.clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        androidx.compose.foundation.Canvas(Modifier.size(16.dp)) {
+            drawRect(Color(color), androidx.compose.ui.geometry.Offset(size.width * .25f, size.height * .3f),
+                androidx.compose.ui.geometry.Size(size.width * .5f, size.height * .58f), style = Stroke(1.4.dp.toPx()))
+            drawLine(Color(color), androidx.compose.ui.geometry.Offset(size.width * .18f, size.height * .22f),
+                androidx.compose.ui.geometry.Offset(size.width * .82f, size.height * .22f), 1.4.dp.toPx())
         }
     }
 }

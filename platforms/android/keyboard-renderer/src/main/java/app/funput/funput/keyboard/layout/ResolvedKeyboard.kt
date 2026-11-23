@@ -43,6 +43,8 @@ data class ResolvedSuggestionBar(
     val microphoneKey: ResolvedKey? = null,
     val themeKey: ResolvedKey? = null,
     val settingsKey: ResolvedKey? = null,
+    val numpadKey: ResolvedKey? = null,
+    val shortcutsKey: ResolvedKey? = null,
     val toolbarToggleKey: ResolvedKey? = null,
     /** Present in SwiftKey Dual-Bar mode: top utility strip bounds drawn with toolbarBackgroundColor. */
     val toolbarRowBounds: KeyBounds? = null,
@@ -63,6 +65,8 @@ data class ResolvedKeyboard(
         suggestionBar?.microphoneKey?.let(::add)
         suggestionBar?.themeKey?.let(::add)
         suggestionBar?.settingsKey?.let(::add)
+        suggestionBar?.numpadKey?.let(::add)
+        suggestionBar?.shortcutsKey?.let(::add)
         suggestionBar?.placementKey?.let(::add)
         suggestionBar?.systemInputMethodKey?.let(::add)
         suggestionBar?.clipboardKey?.let(::add)

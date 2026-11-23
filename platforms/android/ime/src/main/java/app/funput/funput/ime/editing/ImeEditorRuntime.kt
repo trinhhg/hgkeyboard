@@ -31,12 +31,15 @@ internal class ImeEditorRuntime(
 
     var policy: EditorInfoPolicy = EditorInfoPolicy.Default
         private set
+    var currentEditorInfo: EditorInfo? = null
+        private set
 
     /** The field's own policy and app, kept so the Enter key can follow a later change of the list. */
     private var declared: EditorInfoPolicy = EditorInfoPolicy.Default
     private var packageName: String? = null
 
     fun configure(info: EditorInfo) {
+        currentEditorInfo = info
         declared = EditorInfoPolicyResolver.resolve(info)
         packageName = info.packageName
         policy = withEnterToSend()
@@ -58,6 +61,7 @@ internal class ImeEditorRuntime(
     private fun withEnterToSend() = EnterToSendPolicy.apply(declared, packageName, enterToSendPackages())
 
     fun finish() {
+        currentEditorInfo = null
         declared = EditorInfoPolicy.Default
         packageName = null
         policy = EditorInfoPolicy.Default

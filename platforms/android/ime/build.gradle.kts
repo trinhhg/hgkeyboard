@@ -37,6 +37,7 @@ dependencies {
     implementation(project(":keyboard-ui"))
     implementation(project(":shortcut-store"))
     implementation(project(":theme-store"))
+    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.mlkit.genai.speech)
     implementation(libs.kotlinx.coroutines.android)

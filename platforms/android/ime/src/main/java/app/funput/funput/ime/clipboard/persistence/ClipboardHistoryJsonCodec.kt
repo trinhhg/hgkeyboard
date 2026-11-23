@@ -45,6 +45,7 @@ internal object ClipboardHistoryJsonCodec {
         .put("capturedAtEpochMillis", entry.capturedAt.toEpochMilli())
         .put("isPinned", entry.isPinned)
         .put("sourceToken", entry.sourceToken)
+        .apply { entry.imagePath?.let { put("imagePath", it) } }
 
     private fun decodeEntry(json: JSONObject) = ClipboardEntry(
         id = UUID.fromString(json.getString("id")),
@@ -52,5 +53,6 @@ internal object ClipboardHistoryJsonCodec {
         capturedAt = Instant.ofEpochMilli(json.getLong("capturedAtEpochMillis")),
         isPinned = json.getBoolean("isPinned"),
         sourceToken = json.getString("sourceToken"),
+        imagePath = json.optString("imagePath").takeIf { it.isNotBlank() },
     )
 }

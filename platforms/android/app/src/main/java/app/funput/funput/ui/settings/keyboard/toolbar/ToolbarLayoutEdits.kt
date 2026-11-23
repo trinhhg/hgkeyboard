@@ -30,9 +30,22 @@ internal object ToolbarLayoutEdits {
         val slot = from.removeAt(index)
         val to = preferences.slots(side.other).toMutableList().also { it += slot }
         return when (side) {
-            ToolbarSide.LEADING -> ToolbarLayoutPreferences(from, to)
-            ToolbarSide.TRAILING -> ToolbarLayoutPreferences(to, from)
+            ToolbarSide.LEADING -> preferences.copy(leading = from, trailing = to)
+            ToolbarSide.TRAILING -> preferences.copy(leading = to, trailing = from)
         }
+    }
+
+    fun toggleVisibility(
+        preferences: ToolbarLayoutPreferences,
+        slot: ToolbarSlot,
+    ): ToolbarLayoutPreferences {
+        if (slot == ToolbarSlot.EMOJI) return preferences
+        val nextHidden = if (slot in preferences.hidden) {
+            preferences.hidden - slot
+        } else {
+            preferences.hidden + slot
+        }
+        return preferences.copy(hidden = nextHidden)
     }
 
     private fun ToolbarLayoutPreferences.slots(side: ToolbarSide) = when (side) {

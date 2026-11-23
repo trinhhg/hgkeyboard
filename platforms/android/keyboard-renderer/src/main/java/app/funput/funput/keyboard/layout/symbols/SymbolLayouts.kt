@@ -3,7 +3,7 @@ package app.funput.funput.keyboard.layout.symbols
 import app.funput.funput.keyboard.KeyboardFeatures
 import app.funput.funput.keyboard.layout.keys.commaKey
 import app.funput.funput.keyboard.layout.keys.periodKey
-import app.funput.funput.keyboard.layout.letters.specialKey
+import app.funput.funput.keyboard.layout.letters.keyboardToolbarSpec
 import app.funput.funput.keyboard.layout.rows.TopNumberRowMode
 import app.funput.funput.keyboard.layout.rows.topNumberRow
 import app.funput.funput.keyboard.model.KeyRole
@@ -12,7 +12,6 @@ import app.funput.funput.keyboard.model.KeySwipeAction
 import app.funput.funput.keyboard.model.KeyboardInputMethod
 import app.funput.funput.keyboard.model.KeyboardLayout
 import app.funput.funput.keyboard.model.KeyboardRow
-import app.funput.funput.keyboard.model.SuggestionBarSpec
 
 internal object SymbolLayouts {
     fun primary(
@@ -61,11 +60,8 @@ internal object SymbolLayouts {
         id = "$id-${inputMethod.name.lowercase()}${suffix(suggestionsEnabled, secure)}",
         inputMethod = inputMethod,
         suggestionBar = if (KeyboardFeatures.EmojiToolbarEnabled && !secure) {
-            SuggestionBarSpec(
-                clipboardKey = specialKey("clipboard-$id", "", KeyRole.CLIPBOARD, accessibilityLabel = "Dán"),
-                placementKey = specialKey("placement-$id", "", KeyRole.PLACEMENT, accessibilityLabel = "Chế độ bàn phím"),
-                microphoneKey = specialKey("microphone-$id", "", KeyRole.MICROPHONE, accessibilityLabel = "Nhập bằng giọng nói"),
-                emojiKey = specialKey("emoji-$id", "", KeyRole.EMOJI, accessibilityLabel = "Biểu tượng cảm xúc"),
+            keyboardToolbarSpec(
+                idSuffix = "-$id",
                 suggestionsEnabled = KeyboardFeatures.SuggestionsEnabled && suggestionsEnabled,
             )
         } else {
@@ -93,11 +89,13 @@ internal object SymbolLayouts {
 
     private fun actionRow(page: String, secure: Boolean) = KeyboardRow(
         keys = listOf(
-            specialKey("letters-$page", "ABC", KeyRole.LETTERS, 1.7f, "Chữ cái"),
+            specialKey("letters-$page", "ABC", KeyRole.LETTERS, 1.5f, "Chữ cái"),
             commaKey("comma-$page"),
+            specialKey("numpad-$page", "123", KeyRole.NUMPAD, 1.1f, "Bàn phím số"),
             symbolSpace(page, secure),
+            KeySpec("underscore-$page", "_", KeyRole.PUNCTUATION, accessibilityLabel = "_"),
             periodKey("period-$page"),
-            specialKey("enter-$page", "", KeyRole.ENTER, 1.7f, "Enter"),
+            specialKey("enter-$page", "", KeyRole.ENTER, 1.5f, "Enter"),
         ),
     )
 
@@ -105,7 +103,7 @@ internal object SymbolLayouts {
         id = "space-$page",
         label = if (secure) "Tiếng Anh" else "Tiếng Việt",
         role = KeyRole.SPACE,
-        widthWeight = 5.8f,
+        widthWeight = 3.9f,
         accessibilityLabel = if (secure) "Dấu cách" else "Dấu cách. Vuốt để đổi ngôn ngữ",
         horizontalSwipeAction = KeySwipeAction.TOGGLE_LANGUAGE.takeUnless { secure },
     )

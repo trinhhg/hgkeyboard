@@ -18,6 +18,8 @@ enum class KeyRole {
     THEME,
     SETTINGS,
     TOOLBAR_TOGGLE,
+    NUMPAD,
+    SHORTCUTS,
     SPACE,
     ENTER,
 }

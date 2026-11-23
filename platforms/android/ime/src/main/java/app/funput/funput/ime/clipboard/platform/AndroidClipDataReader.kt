@@ -26,6 +26,7 @@ internal fun ClipData.readClipboardText(
 
 internal fun ClipDescription.clipboardSnapshot() = ClipboardSnapshot(
     kind = when {
+        hasMimeType("image/*") -> ClipboardContentKind.IMAGE
         hasMimeType(ClipDescription.MIMETYPE_TEXT_URILIST) -> ClipboardContentKind.LINK
         hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) ||
             hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML) -> ClipboardContentKind.TEXT

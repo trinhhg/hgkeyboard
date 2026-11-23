@@ -10,9 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import app.funput.funput.R
 import app.funput.funput.ui.kit.layout.FunputScreen
+import app.funput.funput.ui.settings.KeyboardTestSheet
 import app.funput.funput.ui.settings.SettingsPicker
 import app.funput.funput.ui.settings.SettingsPickerSheet
 import app.funput.funput.ui.settings.SettingsScreenState
+import app.funput.funput.ui.settings.TestKeyboardTopBarAction
 import app.funput.funput.ui.settings.pages.SettingsPage
 import app.funput.funput.ui.settings.search.rememberSettingsSearchIndex
 import app.funput.funput.ui.settings.search.settingsSearchField
@@ -34,6 +36,7 @@ internal fun KeyboardHubScreen(
     // Saveable, so a page opened from the results comes back to the same results.
     var query by rememberSaveable { mutableStateOf("") }
     var picker by rememberSaveable { mutableStateOf<SettingsPicker?>(null) }
+    var showTester by rememberSaveable { mutableStateOf(false) }
     val searching = query.isNotBlank()
     // The hub is the root of the start tab, where back would otherwise leave the app.
     BackHandler(enabled = searching) { query = "" }
@@ -44,7 +47,12 @@ internal fun KeyboardHubScreen(
         SettingsHubRow(page, summaries.of(page, state))
     }
     val results = if (searching) index.search(query) else emptyList()
-    FunputScreen(title = stringResource(R.string.nav_keyboard), modifier = modifier, tabBar = tabBar) {
+    FunputScreen(
+        title = stringResource(R.string.nav_keyboard),
+        modifier = modifier,
+        actions = { TestKeyboardTopBarAction { showTester = true } },
+        tabBar = tabBar,
+    ) {
         settingsSearchField(query = query, onQueryChange = { query = it })
         if (searching) {
             settingsSearchResults(results = results, onOpenPage = onOpenPage)
@@ -53,4 +61,5 @@ internal fun KeyboardHubScreen(
         }
     }
     SettingsPickerSheet(picker = picker, state = state, onDismiss = { picker = null })
+    KeyboardTestSheet(visible = showTester, onDismiss = { showTester = false })
 }

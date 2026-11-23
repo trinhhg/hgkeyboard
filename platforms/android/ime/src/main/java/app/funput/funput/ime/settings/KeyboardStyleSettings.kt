@@ -32,33 +32,30 @@ enum class KeyboardStylePreset(val id: String) {
 data class KeyboardStylePreferences(
     val preset: KeyboardStylePreset = KeyboardStylePreset.SWIFTKEY,
     val showSecondarySymbols: Boolean = true,
-    val showBottomEmojiKey: Boolean = true,
+    val showBottomEmojiKey: Boolean = false,
     val showVniAccentsOnNumberRow: Boolean = true,
     val alwaysCapitalizeLabels: Boolean = false,
     val showCommaPeriodKeys: Boolean = true,
     val showLanguageSwitchKey: Boolean = false,
-    val toolbarMode: KeyboardToolbarMode = KeyboardToolbarMode.AUTO_PRESET,
+    val toolbarMode: KeyboardToolbarMode = KeyboardToolbarMode.SINGLE_BAR,
     val doubleSpacePeriodEnabled: Boolean = true,
     val spaceSwipeBehavior: SpaceSwipeBehavior = SpaceSwipeBehavior.MOVE_CURSOR,
     val longPressDelayMs: Int = DefaultLongPressDelayMs,
 ) {
+    /** Single unified 44dp toolbar is always used so no extra vertical space is wasted. */
     val effectiveIsDualBar: Boolean
-        get() = when (toolbarMode) {
-            KeyboardToolbarMode.AUTO_PRESET -> preset == KeyboardStylePreset.SWIFTKEY
-            KeyboardToolbarMode.SINGLE_BAR -> false
-            KeyboardToolbarMode.DUAL_BAR -> true
-        }
+        get() = false
 
     fun toLayoutOptions(): KeyboardStyleOptions = KeyboardStyleOptions(
         showSecondarySymbols = showSecondarySymbols,
-        showBottomEmojiKey = showBottomEmojiKey,
+        showBottomEmojiKey = false,
         showVniAccentsOnNumberRow = showVniAccentsOnNumberRow,
         alwaysCapitalizeLabels = alwaysCapitalizeLabels,
         showCommaPeriodKeys = showCommaPeriodKeys,
         showLanguageSwitchKey = showLanguageSwitchKey,
         spaceSwipeSwitchesLanguage = spaceSwipeBehavior == SpaceSwipeBehavior.SWITCH_LANGUAGE,
-        toolbarMode = toolbarMode,
-        isDualBar = effectiveIsDualBar,
+        toolbarMode = KeyboardToolbarMode.SINGLE_BAR,
+        isDualBar = false,
     )
 
     companion object {
@@ -77,15 +74,13 @@ class KeyboardStyleSettings(context: Context) {
             val preset = KeyboardStylePreset.fromId(prefs[PresetKey])
             KeyboardStylePreferences(
                 preset = preset,
-                showSecondarySymbols = prefs[SecondarySymbolsKey] ?: (preset != KeyboardStylePreset.LABAN),
-                showBottomEmojiKey = prefs[BottomEmojiKey] ?: (preset != KeyboardStylePreset.LABAN),
+                showSecondarySymbols = prefs[SecondarySymbolsKey] ?: true,
+                showBottomEmojiKey = false,
                 showVniAccentsOnNumberRow = prefs[VniAccentsKey] ?: true,
                 alwaysCapitalizeLabels = prefs[AlwaysCapitalizeKey] ?: false,
                 showCommaPeriodKeys = prefs[CommaPeriodKey] ?: true,
                 showLanguageSwitchKey = prefs[LanguageSwitchKey] ?: false,
-                toolbarMode = prefs[ToolbarModeKey]?.let { raw ->
-                    KeyboardToolbarMode.entries.firstOrNull { it.name == raw }
-                } ?: KeyboardToolbarMode.AUTO_PRESET,
+                toolbarMode = KeyboardToolbarMode.SINGLE_BAR,
                 doubleSpacePeriodEnabled = prefs[DoubleSpacePeriodKey] ?: true,
                 spaceSwipeBehavior = prefs[SpaceSwipeKey]?.let { raw ->
                     SpaceSwipeBehavior.entries.firstOrNull { it.name == raw }
@@ -136,7 +131,7 @@ class KeyboardStyleSettings(context: Context) {
         dataStore.edit { it[LongPressDelayKey] = delayMs.coerceIn(180, 600) }
     }
 
-    /** Applies a complete style preset: theme, number row, secondary symbols, toolbar, and bottom row. */
+    /** Applies the style preset's theme without resetting user layout or row toggles. */
     suspend fun applyPreset(
         preset: KeyboardStylePreset,
         isDark: Boolean = false,
@@ -144,28 +139,12 @@ class KeyboardStyleSettings(context: Context) {
     ) {
         dataStore.edit { prefs ->
             prefs[PresetKey] = preset.id
-            prefs[ToolbarModeKey] = KeyboardToolbarMode.AUTO_PRESET.name
-            when (preset) {
-                KeyboardStylePreset.LABAN -> {
-                    prefs[SecondarySymbolsKey] = false
-                    prefs[BottomEmojiKey] = false
-                    prefs[booleanPreferencesKey("shows_number_row")] = true
-                    val themeId = themeIdOverride ?: if (isDark) KeyboardThemeId.LabanDark else KeyboardThemeId.Laban
-                    prefs[KeyboardThemeSettings.ThemeIdKey] = themeId.value
-                }
-                KeyboardStylePreset.SWIFTKEY -> {
-                    prefs[SecondarySymbolsKey] = true
-                    prefs[BottomEmojiKey] = true
-                    prefs[booleanPreferencesKey("shows_number_row")] = false
-                    val themeId = themeIdOverride ?: if (isDark) KeyboardThemeId.SwiftKeyDark else KeyboardThemeId.SwiftKey
-                    prefs[KeyboardThemeSettings.ThemeIdKey] = themeId.value
-                }
-                KeyboardStylePreset.LIQUID_GLASS -> {
-                    prefs[SecondarySymbolsKey] = true
-                    prefs[BottomEmojiKey] = true
-                    prefs[KeyboardThemeSettings.ThemeIdKey] = (themeIdOverride ?: KeyboardThemeId.LiquidGlass).value
-                }
+            val themeId = themeIdOverride ?: when (preset) {
+                KeyboardStylePreset.LABAN -> if (isDark) KeyboardThemeId.LabanDark else KeyboardThemeId.Laban
+                KeyboardStylePreset.SWIFTKEY -> if (isDark) KeyboardThemeId.SwiftKeyDark else KeyboardThemeId.SwiftKey
+                KeyboardStylePreset.LIQUID_GLASS -> KeyboardThemeId.LiquidGlass
             }
+            prefs[KeyboardThemeSettings.ThemeIdKey] = themeId.value
         }
     }
 

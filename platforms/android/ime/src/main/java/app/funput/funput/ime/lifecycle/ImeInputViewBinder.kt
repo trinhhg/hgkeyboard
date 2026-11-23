@@ -9,13 +9,10 @@ import app.funput.funput.ime.SystemInputMethodSwitcher
 import app.funput.funput.ime.applyImeState
 import app.funput.funput.ime.installedImeThemeRepository
 import app.funput.funput.ime.isDarkAppearance
-import app.funput.funput.ime.settings.KeyboardStylePreset
-import app.funput.funput.ime.settings.KeyboardStyleSettings
 import app.funput.funput.ime.settings.KeyboardThemeSettings
 import app.funput.funput.ime.settings.KeyboardThemeSlot
 import app.funput.funput.keyboard.ui.FunputKeyboardView
 import app.funput.funput.keyboard.ui.emoji.EmojiCatalogPreloader
-import app.funput.funput.theme.KeyboardThemeId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -38,25 +35,7 @@ internal class ImeInputViewBinder(
         ImeKeyboardCallbackBinder.bind(keyboard, editing, switcher)
         keyboard.callbacks.onThemeSelected = { themeId ->
             scope.launch {
-                val styleStore = KeyboardStyleSettings(service)
-                when (themeId) {
-                    KeyboardThemeId.Laban -> styleStore.applyPreset(KeyboardStylePreset.LABAN, isDark = false)
-                    KeyboardThemeId.LabanDark -> styleStore.applyPreset(KeyboardStylePreset.LABAN, isDark = true)
-                    KeyboardThemeId.SwiftKey -> styleStore.applyPreset(KeyboardStylePreset.SWIFTKEY, isDark = false)
-                    KeyboardThemeId.SwiftKeyDark -> styleStore.applyPreset(KeyboardStylePreset.SWIFTKEY, isDark = true)
-                    KeyboardThemeId.SwiftKeyClassic -> styleStore.applyPreset(
-                        KeyboardStylePreset.SWIFTKEY,
-                        isDark = false,
-                        themeIdOverride = KeyboardThemeId.SwiftKeyClassic,
-                    )
-                    KeyboardThemeId.SwiftKeyClassicDark -> styleStore.applyPreset(
-                        KeyboardStylePreset.SWIFTKEY,
-                        isDark = true,
-                        themeIdOverride = KeyboardThemeId.SwiftKeyClassicDark,
-                    )
-                    KeyboardThemeId.LiquidGlass -> styleStore.applyPreset(KeyboardStylePreset.LIQUID_GLASS)
-                    else -> KeyboardThemeSettings(service).setTheme(themeId, KeyboardThemeSlot.SINGLE)
-                }
+                KeyboardThemeSettings(service).setTheme(themeId, KeyboardThemeSlot.SINGLE)
             }
         }
         ImePlacementBinder.bind(keyboard, service, scope)

@@ -30,6 +30,8 @@ internal class KeyboardUtilityActionRouter(
             key?.role == KeyRole.THEME -> utilities.dispatch(KeyboardUtilityAction.THEME)
             key?.role == KeyRole.SETTINGS -> utilities.dispatch(KeyboardUtilityAction.SETTINGS)
             key?.role == KeyRole.TOOLBAR_TOGGLE -> utilities.dispatch(KeyboardUtilityAction.TOOLBAR_TOGGLE)
+            key?.role == KeyRole.NUMPAD -> utilities.dispatch(KeyboardUtilityAction.NUMPAD)
+            key?.role == KeyRole.SHORTCUTS -> utilities.dispatch(KeyboardUtilityAction.SHORTCUTS)
             keyId != null -> onKeyboardKey(keyId)
         }
     }

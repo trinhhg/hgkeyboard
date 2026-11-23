@@ -28,6 +28,7 @@ internal class ImeClipboardHistoryController(
     private val preparePanel: () -> Unit,
     private val onCleared: () -> Unit,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val commitImage: (String) -> Boolean = { false },
 ) {
     private val job = SupervisorJob(parentScope.coroutineContext[Job])
     private val scope = CoroutineScope(parentScope.coroutineContext + job)
@@ -77,9 +78,14 @@ internal class ImeClipboardHistoryController(
                 refresh()
                 return@launch completed(false)
             }
-            commitText(entry.text)
-            afterCommit()
-            completed(true)
+            val committed = if (entry.imagePath != null) {
+                commitImage(entry.imagePath)
+            } else {
+                commitText(entry.text)
+                true
+            }
+            if (committed) afterCommit()
+            completed(committed)
         }
     }
 

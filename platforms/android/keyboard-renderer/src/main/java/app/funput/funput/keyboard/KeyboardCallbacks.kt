@@ -17,6 +17,9 @@ class KeyboardCallbacks : KeyboardUtilityDispatcher {
     internal var onToolbarToggleRequested: (() -> Unit)? = null
     var onClipboardPanelRequested: (() -> Unit)? = null
     var onClipboardPasteRequested: (() -> Unit)? = null
+    var onNumpadRequested: (() -> Unit)? = null
+    var onShortcutsRequested: (() -> Unit)? = null
+    var onInputMethodPickerRequested: (() -> Unit)? = null
     var onSuggestionSelected: ((SuggestionSelection) -> Unit)? = null
 
     /** Whether a long press on the suggestion may offer [SuggestionAction]s; none when unset. */
@@ -37,6 +40,9 @@ class KeyboardCallbacks : KeyboardUtilityDispatcher {
             KeyboardUtilityAction.TOOLBAR_TOGGLE -> onToolbarToggleRequested?.invoke()
             KeyboardUtilityAction.CLIPBOARD_PANEL -> onClipboardPanelRequested?.invoke()
             KeyboardUtilityAction.CLIPBOARD_PASTE -> onClipboardPasteRequested?.invoke()
+            KeyboardUtilityAction.NUMPAD -> onNumpadRequested?.invoke()
+            KeyboardUtilityAction.SHORTCUTS -> onShortcutsRequested?.invoke()
+            KeyboardUtilityAction.INPUT_METHOD_PICKER -> onInputMethodPickerRequested?.invoke()
         }
     }
 

@@ -37,7 +37,8 @@ internal object KeyboardHitTargetResolver {
     ): ResolvedSuggestionBar {
         val controls = listOfNotNull(
             bar.toolbarToggleKey, bar.microphoneKey, bar.themeKey, bar.settingsKey,
-            bar.placementKey, bar.systemInputMethodKey, bar.clipboardKey, bar.emojiKey,
+            bar.numpadKey, bar.shortcutsKey, bar.placementKey, bar.systemInputMethodKey,
+            bar.clipboardKey, bar.emojiKey,
         ).sortedBy { it.bounds.left }
         val hitBottom = midpoint(bar.bounds.bottom, keyboard.rows.first().first().bounds.top)
         val toolbarRow = bar.toolbarRowBounds
@@ -75,6 +76,8 @@ internal object KeyboardHitTargetResolver {
                 microphoneKey = lookup(bar.microphoneKey),
                 themeKey = lookup(bar.themeKey),
                 settingsKey = lookup(bar.settingsKey),
+                numpadKey = lookup(bar.numpadKey),
+                shortcutsKey = lookup(bar.shortcutsKey),
                 emojiKey = requireNotNull(lookup(bar.emojiKey)),
             )
         }
@@ -124,6 +127,8 @@ internal object KeyboardHitTargetResolver {
             microphoneKey = lookup(bar.microphoneKey),
             themeKey = lookup(bar.themeKey),
             settingsKey = lookup(bar.settingsKey),
+            numpadKey = lookup(bar.numpadKey),
+            shortcutsKey = lookup(bar.shortcutsKey),
             emojiKey = requireNotNull(lookup(bar.emojiKey)),
         )
     }

@@ -13,8 +13,16 @@ internal class ClipboardKeyHold(
     schedule: (Runnable, Long) -> Unit,
     cancel: (Runnable) -> Unit,
     private val touchSlop: Float,
+    private val targetRole: KeyRole,
     private val onClaimed: (pointerId: Int) -> Unit,
 ) {
+    constructor(
+        schedule: (Runnable, Long) -> Unit,
+        cancel: (Runnable) -> Unit,
+        touchSlop: Float,
+        onClaimed: (pointerId: Int) -> Unit,
+    ) : this(schedule, cancel, touchSlop, KeyRole.CLIPBOARD, onClaimed)
+
     private val claimed = mutableSetOf<Int>()
     private val origins = mutableMapOf<Int, FloatArray>()
     private val hold = KeyHoldController(schedule, cancel) { pointerId ->
@@ -23,7 +31,7 @@ internal class ClipboardKeyHold(
     }
 
     fun start(pointerId: Int, key: KeySpec?, x: Float, y: Float) {
-        if (key?.role != KeyRole.CLIPBOARD) return
+        if (key?.role != targetRole) return
         origins[pointerId] = floatArrayOf(x, y)
         hold.start(pointerId)
     }

@@ -9,10 +9,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import app.funput.funput.ui.kit.layout.FunputScreen
+import app.funput.funput.ui.settings.KeyboardTestSheet
 import app.funput.funput.ui.settings.LocalSettingsPageTitle
 import app.funput.funput.ui.settings.SettingsPicker
 import app.funput.funput.ui.settings.SettingsPickerSheet
 import app.funput.funput.ui.settings.SettingsScreenState
+import app.funput.funput.ui.settings.TestKeyboardTopBarAction
 
 /**
  * The frame every settings page shares: its title in the top bar, back to wherever it was opened
@@ -29,11 +31,18 @@ internal fun SettingsPageScreen(
 ) {
     // Per destination, so the navigation host forgets it once the page is popped.
     var picker by rememberSaveable { mutableStateOf<SettingsPicker?>(null) }
+    var showTester by rememberSaveable { mutableStateOf(false) }
     val title = stringResource(page.title)
     CompositionLocalProvider(LocalSettingsPageTitle provides title) {
-        FunputScreen(title = title, modifier = modifier, onBack = onBack) {
+        FunputScreen(
+            title = title,
+            modifier = modifier,
+            onBack = onBack,
+            actions = { TestKeyboardTopBarAction { showTester = true } },
+        ) {
             settingsPageItems(page = page, state = state, onOpenPicker = { picker = it }, onOpenDictionary = onOpenDictionary)
         }
     }
     SettingsPickerSheet(picker = picker, state = state, onDismiss = { picker = null })
+    KeyboardTestSheet(visible = showTester, onDismiss = { showTester = false })
 }

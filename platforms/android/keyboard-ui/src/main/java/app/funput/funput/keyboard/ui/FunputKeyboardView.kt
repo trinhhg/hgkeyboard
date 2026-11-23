@@ -120,7 +120,8 @@ class FunputKeyboardView @JvmOverloads constructor(
         keyboardSurface.callbacks.onKeyAction = ::routeKeyAction
         callbacks.bindSuggestions(keyboardSurface.callbacks)
         bindKeyboardToolbar(keyboardSurface, callbacks, ::openEmojiFromKeyboard,
-            ::showClipboardPanel, placement::showPicker, ::showThemePanel)
+            { showClipboardPanel(1) }, placement::showPicker, ::showThemePanel, ::showNumpadPanel,
+            { showClipboardPanel(2) })
         setBackgroundColor(keyboardTheme.backgroundEndColor)
         safeArea.install()
     }
@@ -131,12 +132,18 @@ class FunputKeyboardView @JvmOverloads constructor(
     fun showThemePanel(): Unit = panelCoordinator.showTheme()
     fun setTypingPresence(hasTextBeforeCursor: Boolean) =
         keyboardSurface.setTypingPresence(hasTextBeforeCursor)
-    fun showClipboardPanel() {
-        if (!clipboardState.available() || activePanel == KeyboardPanel.CLIPBOARD) return
-        panelCoordinator.showClipboard(); callbacks.dispatchClipboardPanelOpened()
+    fun showClipboardPanel(initialTab: Int = 1) {
+        if (!clipboardState.available()) return
+        clipboardState.selectTab(initialTab)
+        if (activePanel != KeyboardPanel.CLIPBOARD) {
+            panelCoordinator.showClipboard()
+            callbacks.dispatchClipboardPanelOpened()
+        }
     }
     fun showSymbolsPanel(mode: KeyboardLayoutMode = KeyboardLayoutMode.SYMBOLS_PRIMARY) =
         panelCoordinator.showSymbols(mode)
+
+    fun showNumpadPanel() = panelCoordinator.showSymbols(KeyboardLayoutMode.NUMPAD)
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val size = hostMeasure.resolve(widthMeasureSpec, heightMeasureSpec,

@@ -21,7 +21,7 @@ internal class ClipboardKeyIconRenderer(private val metrics: RenderMetrics) {
 
     fun updateTheme(theme: KeyboardTheme) {
         stroke.color = theme.specialLabelColor
-        stroke.strokeWidth = metrics.dp(1.7f)
+        stroke.strokeWidth = metrics.dp(1.45f)
         accentColor = theme.accentColor
     }
 
@@ -30,15 +30,22 @@ internal class ClipboardKeyIconRenderer(private val metrics: RenderMetrics) {
             min(key.bounds.width, key.bounds.height) * IconSizeRatio,
             metrics.dp(MaxIconHeightDp),
         )
-        val offset = size * StackOffsetRatio
-        val frame = size - offset
+        val w = size * 0.78f
+        val h = size * 0.94f
         val radius = metrics.dp(CornerRadiusDp)
-        val left = key.bounds.centerX - size / 2f
-        val top = key.bounds.centerY - size / 2f
-        back.set(left + offset, top, left + offset + frame, top + frame)
-        front.set(left, top + offset, left + frame, top + offset + frame)
+        val cx = key.bounds.centerX
+        val cy = key.bounds.centerY + h * 0.06f
+        val left = cx - w / 2f
+        val top = cy - h / 2f
+        val right = cx + w / 2f
+        val bottom = cy + h / 2f
+        // SwiftKey-style clipboard board with top clip bar and 2 horizontal lines.
+        back.set(left, top, right, bottom)
         canvas.drawRoundRect(back, radius, radius, stroke)
-        canvas.drawRoundRect(front, radius, radius, stroke)
+        front.set(cx - w * 0.28f, top - h * 0.14f, cx + w * 0.28f, top + h * 0.10f)
+        canvas.drawRoundRect(front, radius * 0.6f, radius * 0.6f, stroke)
+        canvas.drawLine(left + w * 0.26f, cy - h * 0.04f, right - w * 0.26f, cy - h * 0.04f, stroke)
+        canvas.drawLine(left + w * 0.26f, cy + h * 0.22f, right - w * 0.34f, cy + h * 0.22f, stroke)
         if (offerActive) drawBadge(canvas, key)
     }
 
@@ -56,7 +63,6 @@ internal class ClipboardKeyIconRenderer(private val metrics: RenderMetrics) {
     private companion object {
         const val IconSizeRatio = 0.42f
         const val MaxIconHeightDp = 19f
-        const val StackOffsetRatio = 0.28f
         const val CornerRadiusDp = 2f
         const val BadgeRadiusDp = 2.25f
         const val BadgeInsetDp = 5f

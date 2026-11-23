@@ -13,16 +13,16 @@ enum class SpaceSwipeBehavior {
     SWITCH_LANGUAGE,
 }
 
-/** Structural layout choices that distinguish Laban Key, SwiftKey, and Glass keyboard layouts. */
+/** Structural layout choices for keyboard rows and keys. */
 data class KeyboardStyleOptions(
     val showSecondarySymbols: Boolean = true,
-    val showBottomEmojiKey: Boolean = true,
+    val showBottomEmojiKey: Boolean = false,
     val showVniAccentsOnNumberRow: Boolean = true,
     val alwaysCapitalizeLabels: Boolean = false,
     val showCommaPeriodKeys: Boolean = true,
     val showLanguageSwitchKey: Boolean = false,
     val spaceSwipeSwitchesLanguage: Boolean = false,
-    val toolbarMode: KeyboardToolbarMode = KeyboardToolbarMode.AUTO_PRESET,
+    val toolbarMode: KeyboardToolbarMode = KeyboardToolbarMode.SINGLE_BAR,
     val isDualBar: Boolean = false,
 ) {
     companion object {
@@ -34,8 +34,8 @@ data class KeyboardStyleOptions(
         )
         val SwiftKey = KeyboardStyleOptions(
             showSecondarySymbols = true,
-            showBottomEmojiKey = true,
-            isDualBar = true,
+            showBottomEmojiKey = false,
+            isDualBar = false,
         )
     }
 }

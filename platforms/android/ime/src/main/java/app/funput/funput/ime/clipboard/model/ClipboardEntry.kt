@@ -18,9 +18,10 @@ data class ClipboardEntry(
     val capturedAt: Instant = Instant.now(),
     val isPinned: Boolean = false,
     val sourceToken: String,
+    val imagePath: String? = null,
 ) {
     init {
-        require(text.isNotEmpty()) { "Clipboard text must not be empty" }
+        require(text.isNotEmpty() || !imagePath.isNullOrBlank()) { "Clipboard text or image must not be empty" }
         require(sourceToken.isNotBlank()) { "Clipboard source token must not be blank" }
     }
 }

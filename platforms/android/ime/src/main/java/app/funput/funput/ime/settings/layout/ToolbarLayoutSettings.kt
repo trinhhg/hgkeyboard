@@ -14,17 +14,19 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
-/** Persists the ordered leading/trailing toolbar sides shared by Settings and the IME. */
+/** Persists the ordered leading/trailing toolbar sides and hidden slots shared by Settings and the IME. */
 data class ToolbarLayoutPreferences(
     val leading: List<ToolbarSlot>,
     val trailing: List<ToolbarSlot>,
+    val hidden: Set<ToolbarSlot> = ToolbarArrangement.DefaultHidden,
 ) {
-    fun toArrangement(): ToolbarArrangement = ToolbarArrangement(leading, trailing)
+    fun toArrangement(): ToolbarArrangement = ToolbarArrangement(leading, trailing, hidden)
 
     companion object {
         val Default = ToolbarLayoutPreferences(
             leading = ToolbarArrangement.Default.leading,
             trailing = ToolbarArrangement.Default.trailing,
+            hidden = ToolbarArrangement.DefaultHidden,
         )
     }
 }
@@ -35,7 +37,7 @@ class ToolbarLayoutSettings(context: Context) {
 
     val preferences: Flow<ToolbarLayoutPreferences> = dataStore.data
         .catch { error -> if (error is IOException) emit(emptyPreferences()) else throw error }
-        .map { values -> ToolbarLayoutSettingCodec.decode(values[LeadingKey], values[TrailingKey]) }
+        .map { values -> ToolbarLayoutSettingCodec.decode(values[LeadingKey], values[TrailingKey], values[HiddenKey]) }
         .distinctUntilChanged()
 
     suspend fun setPreferences(value: ToolbarLayoutPreferences) {
@@ -45,7 +47,7 @@ class ToolbarLayoutSettings(context: Context) {
     /** Read-modify-write inside one DataStore transaction so rapid edits do not clobber each other. */
     suspend fun updatePreferences(transform: (ToolbarLayoutPreferences) -> ToolbarLayoutPreferences) {
         dataStore.edit { values ->
-            val current = ToolbarLayoutSettingCodec.decode(values[LeadingKey], values[TrailingKey])
+            val current = ToolbarLayoutSettingCodec.decode(values[LeadingKey], values[TrailingKey], values[HiddenKey])
             write(values, transform(current))
         }
     }
@@ -53,25 +55,36 @@ class ToolbarLayoutSettings(context: Context) {
     private fun write(values: MutablePreferences, value: ToolbarLayoutPreferences) {
         values[LeadingKey] = ToolbarLayoutSettingCodec.encode(value.leading)
         values[TrailingKey] = ToolbarLayoutSettingCodec.encode(value.trailing)
+        values[HiddenKey] = ToolbarLayoutSettingCodec.encode(value.hidden.toList())
     }
 
     private companion object {
         // v2 stores both sides left-to-right; older RTL trailing keys are ignored.
         val LeadingKey = stringPreferencesKey("toolbar_layout_leading_v2")
         val TrailingKey = stringPreferencesKey("toolbar_layout_trailing_v2")
+        val HiddenKey = stringPreferencesKey("toolbar_layout_hidden_v2")
     }
 }
 
 internal object ToolbarLayoutSettingCodec {
-    fun decode(leading: String?, trailing: String?): ToolbarLayoutPreferences {
-        val parsedLeading = parse(leading) ?: return ToolbarLayoutPreferences.Default
-        val parsedTrailing = parse(trailing) ?: return ToolbarLayoutPreferences.Default
-        val arrangement = ToolbarArrangement(parsedLeading, parsedTrailing)
+    fun decode(leading: String?, trailing: String?, hidden: String? = null): ToolbarLayoutPreferences {
+        val parsedHidden = parseHidden(hidden) ?: ToolbarArrangement.DefaultHidden
+        val parsedLeading = parse(leading) ?: return ToolbarLayoutPreferences.Default.copy(hidden = parsedHidden)
+        val parsedTrailing = parse(trailing) ?: return ToolbarLayoutPreferences.Default.copy(hidden = parsedHidden)
+        val arrangement = ToolbarArrangement(parsedLeading, parsedTrailing, parsedHidden)
             .normalize(ToolbarSlot.entries.toSet())
-        return ToolbarLayoutPreferences(arrangement.leading, arrangement.trailing)
+        return ToolbarLayoutPreferences(arrangement.leading, arrangement.trailing, arrangement.hidden)
     }
 
     fun encode(slots: List<ToolbarSlot>): String = slots.joinToString(",") { it.name }
+
+    private fun parseHidden(raw: String?): Set<ToolbarSlot>? {
+        if (raw == null) return null
+        if (raw.isEmpty()) return emptySet()
+        return raw.split(',').mapNotNull { name ->
+            ToolbarSlot.entries.firstOrNull { it.name == name }
+        }.toSet()
+    }
 
     private fun parse(raw: String?): List<ToolbarSlot>? {
         if (raw == null) return null

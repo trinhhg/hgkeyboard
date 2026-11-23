@@ -17,7 +17,7 @@ import org.junit.Test
 
 class SymbolLayoutsTest {
     @Test
-    fun `primary page follows Gboard order before Funput-only symbols`() {
+    fun `primary page follows Laban Key order with at row second below numbers`() {
         val layout = KeyboardLayoutResolver.resolve(
             KeyboardInputMethod.TELEX,
             KeyboardLayoutMode.SYMBOLS_PRIMARY,
@@ -27,28 +27,42 @@ class SymbolLayoutsTest {
         assertEquals("1234567890", labels(layout.rows[0].keys))
         assertTrue(layout.rows[0].keys.all { key -> key.role == KeyRole.PUNCTUATION })
         assertTrue(layout.rows[0].keys.all { key -> key.secondaryLabel == null })
-        assertEquals(listOf("@", "#", "₫", "_", "&", "-", "+", "(", ")", "/"), keyLabels(layout, 1))
-        assertEquals(listOf("*", "\"", "'", ":", ";", "!", "?", "…", "<", ">"), keyLabels(layout, 2))
-        assertEquals(listOf("=\\<", "¥", "¶", "·", "≠", "±", "≈", "≤", ""), keyLabels(layout, 3))
+        assertEquals(listOf("~", "`", "|", "•", "√", "π", "÷", "×", "¶", "∆"), keyLabels(layout, 1))
+        assertEquals(listOf("@", "#", "₫", "%", "&", "-", "+", "(", ")", "/"), keyLabels(layout, 2))
+        assertEquals(listOf("=\\<", "*", "\"", "'", ":", ";", "!", "?", ""), keyLabels(layout, 3))
         assertTrue(layout.rows.flattenedKeys().any { it.label == "₫" })
         assertTrue(layout.rows.flattenedKeys().any { it.role == KeyRole.MORE_SYMBOLS })
         assertTrue(layout.rows.flattenedKeys().any { it.role == KeyRole.LETTERS })
+        assertTrue(layout.rows.flattenedKeys().any { it.role == KeyRole.NUMPAD })
     }
 
     @Test
-    fun `secondary page follows Gboard order before Funput-only symbols`() {
+    fun `secondary page follows Laban Key order without duplicate glyphs`() {
         val layout = KeyboardLayoutResolver.resolve(
             KeyboardInputMethod.VNI,
             KeyboardLayoutMode.SYMBOLS_SECONDARY,
         )
 
         assertEquals(5, layout.rows.size)
-        assertEquals(listOf("~", "`", "|", "•", "√", "÷", "×", "§", "£", "€"), keyLabels(layout, 1))
-        assertEquals(listOf("$", "¢", "^", "°", "=", "{", "}", "\\", "%", "©"), keyLabels(layout, 2))
-        assertEquals(listOf("?123", "®", "™", "✓", "[", "]", "≥", "∞", ""), keyLabels(layout, 3))
+        assertEquals(listOf("$", "€", "£", "¥", "¢", "^", "°", "=", "{", "}"), keyLabels(layout, 1))
+        assertEquals(listOf("±", "≤", "≥", "≠", "≈", "℅", "\\", "©", "®", "™"), keyLabels(layout, 2))
+        assertEquals(listOf("?123", "…", "<", ">", "[", "]", "✓", "∞", ""), keyLabels(layout, 3))
         assertTrue(layout.rows.flattenedKeys().any { it.role == KeyRole.SYMBOLS && it.label == "?123" })
         assertTrue(layout.rows.flattenedKeys().any { it.label == "€" })
         assertTrue(layout.rows.flattenedKeys().none { it.role == KeyRole.PLACEHOLDER })
+    }
+
+    @Test
+    fun `numpad layout follows Laban Key 4x5 dialpad arrangement`() {
+        val layout = KeyboardLayoutResolver.resolve(
+            KeyboardInputMethod.VNI,
+            KeyboardLayoutMode.NUMPAD,
+        )
+        assertEquals(4, layout.rows.size)
+        assertEquals(listOf(",", "1", "2", "3", "-"), keyLabels(layout, 0))
+        assertEquals(listOf("(", "4", "5", "6", "."), keyLabels(layout, 1))
+        assertEquals(listOf(")", "7", "8", "9", ""), keyLabels(layout, 2))
+        assertEquals(listOf("ABC", "?123", "0", " ", ""), keyLabels(layout, 3))
     }
 
     @Test
@@ -92,15 +106,15 @@ class SymbolLayoutsTest {
     }
 
     @Test
-    fun `compact pages follow Gboard order before Funput-only symbols`() {
+    fun `compact pages follow Laban Key order with underscore on bottom action row`() {
         val primary = compact(KeyboardLayoutMode.SYMBOLS_PRIMARY)
         val secondary = compact(KeyboardLayoutMode.SYMBOLS_SECONDARY)
 
-        assertEquals(listOf("@", "#", "₫", "_", "&", "-", "+", "(", ")", "/"), keyLabels(primary, 1))
+        assertEquals(listOf("@", "#", "₫", "%", "&", "-", "+", "(", ")", "/"), keyLabels(primary, 1))
         assertEquals(listOf("=\\<", "*", "\"", "'", ":", ";", "!", "?", ""), keyLabels(primary, 2))
-        assertEquals(listOf("~", "`", "|", "•", "÷", "×", "£", "€", "$", "^"), keyLabels(secondary, 0))
-        assertEquals(listOf("°", "=", "{", "}", "\\", "%", "©", "[", "]", "…"), keyLabels(secondary, 1))
-        assertEquals(listOf("?123", "<", ">", "¥", "≠", "±", "≤", "≥", ""), keyLabels(secondary, 2))
+        assertEquals(listOf("~", "`", "|", "•", "√", "π", "÷", "×", "¶", "∆"), keyLabels(secondary, 0))
+        assertEquals(listOf("$", "€", "£", "¥", "¢", "^", "°", "=", "{", "}"), keyLabels(secondary, 1))
+        assertEquals(listOf("?123", "\\", "©", "®", "™", "[", "]", "…", ""), keyLabels(secondary, 2))
     }
 
     private fun compact(mode: KeyboardLayoutMode) = KeyboardLayoutResolver.resolve(

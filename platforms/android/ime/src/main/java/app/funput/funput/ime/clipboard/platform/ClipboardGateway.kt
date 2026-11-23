@@ -1,11 +1,16 @@
 package app.funput.funput.ime.clipboard.platform
 
-internal enum class ClipboardContentKind { TEXT, LINK }
+internal enum class ClipboardContentKind { TEXT, LINK, IMAGE }
 
 internal data class ClipboardSnapshot(
     val kind: ClipboardContentKind?,
     val isSensitive: Boolean,
     val sourceToken: String?,
+)
+
+internal data class ClipboardImageResult(
+    val imagePath: String,
+    val sourceToken: String,
 )
 
 internal sealed interface ClipboardReadResult {
@@ -29,5 +34,6 @@ internal fun interface ClipboardObservation {
 internal interface ClipboardGateway {
     fun snapshot(): ClipboardSnapshot?
     fun readText(maxLength: Int): ClipboardReadResult
+    fun readImage(): ClipboardImageResult? = null
     fun observe(onChanged: () -> Unit): ClipboardObservation
 }

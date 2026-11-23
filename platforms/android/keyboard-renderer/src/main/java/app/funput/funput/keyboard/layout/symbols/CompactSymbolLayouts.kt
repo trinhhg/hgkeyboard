@@ -3,6 +3,7 @@ package app.funput.funput.keyboard.layout.symbols
 import app.funput.funput.keyboard.KeyboardFeatures
 import app.funput.funput.keyboard.layout.keys.commaKey
 import app.funput.funput.keyboard.layout.keys.periodKey
+import app.funput.funput.keyboard.layout.letters.keyboardToolbarSpec
 import app.funput.funput.keyboard.layout.letters.specialKey
 import app.funput.funput.keyboard.layout.letters.standardSpaceKey
 import app.funput.funput.keyboard.layout.rows.TopNumberRowMode
@@ -12,7 +13,6 @@ import app.funput.funput.keyboard.model.KeySpec
 import app.funput.funput.keyboard.model.KeyboardInputMethod
 import app.funput.funput.keyboard.model.KeyboardLayout
 import app.funput.funput.keyboard.model.KeyboardRow
-import app.funput.funput.keyboard.model.SuggestionBarSpec
 
 /** Four-row symbol pages used when Telex-family letters hide the number row. */
 internal object CompactSymbolLayouts {
@@ -64,11 +64,8 @@ internal object CompactSymbolLayouts {
     ) = KeyboardLayout(
         id = id + suggestionSuffix(suggestionsEnabled),
         inputMethod = inputMethod,
-        suggestionBar = SuggestionBarSpec(
-            clipboardKey = specialKey("clipboard-$id", "", KeyRole.CLIPBOARD, accessibilityLabel = "Dán"),
-            placementKey = specialKey("placement-$id", "", KeyRole.PLACEMENT, accessibilityLabel = "Chế độ bàn phím"),
-            microphoneKey = specialKey("microphone-$id", "", KeyRole.MICROPHONE, accessibilityLabel = "Nhập bằng giọng nói"),
-            emojiKey = specialKey("emoji-$id", "", KeyRole.EMOJI, accessibilityLabel = "Biểu tượng cảm xúc"),
+        suggestionBar = keyboardToolbarSpec(
+            idSuffix = "-$id",
             suggestionsEnabled = KeyboardFeatures.SuggestionsEnabled && suggestionsEnabled,
         ).takeIf { KeyboardFeatures.EmojiToolbarEnabled },
         rows = rows,
@@ -109,11 +106,13 @@ internal object CompactSymbolLayouts {
 
     private fun actionRow(page: String) = KeyboardRow(
         keys = listOf(
-            specialKey("letters-$page", "ABC", KeyRole.LETTERS, 1.7f, "Chữ cái"),
+            specialKey("letters-$page", "ABC", KeyRole.LETTERS, 1.5f, "Chữ cái"),
             commaKey("comma-$page"),
-            standardSpaceKey(),
+            specialKey("numpad-$page", "123", KeyRole.NUMPAD, 1.1f, "Bàn phím số"),
+            standardSpaceKey(widthWeight = 3.9f),
+            KeySpec("underscore-$page", "_", KeyRole.PUNCTUATION, accessibilityLabel = "_"),
             periodKey("period-$page"),
-            specialKey("enter-$page", "", KeyRole.ENTER, 1.7f, "Enter"),
+            specialKey("enter-$page", "", KeyRole.ENTER, 1.5f, "Enter"),
         ),
     )
 

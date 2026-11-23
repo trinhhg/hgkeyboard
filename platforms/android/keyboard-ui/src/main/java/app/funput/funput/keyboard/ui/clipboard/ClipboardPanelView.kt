@@ -34,6 +34,7 @@ internal class ClipboardPanelView(context: Context) : KeyboardPanelComposeView(c
     var onClearAll: () -> Unit = {}
     var onDelete: () -> Unit = {}
     var onReturn: () -> Unit = {}
+    var onOpenSettings: () -> Unit = {}
     var hapticsEnabled: Boolean
         get() = isHapticFeedbackEnabled
         set(value) { isHapticFeedbackEnabled = value }
@@ -46,6 +47,8 @@ internal class ClipboardPanelView(context: Context) : KeyboardPanelComposeView(c
     private var palette by mutableStateOf<KeyboardPanelPalette?>(null)
     private var now by mutableStateOf(Instant.now())
     private var resetGeneration by mutableIntStateOf(0)
+    private var initialTab by mutableIntStateOf(1)
+    private var tabSelectGeneration by mutableIntStateOf(0)
 
     init { setContent { Content() } }
 
@@ -57,6 +60,11 @@ internal class ClipboardPanelView(context: Context) : KeyboardPanelComposeView(c
 
     fun submitShortcuts(value: List<KeyboardShortcutEntry>) {
         shortcuts = value
+    }
+
+    fun selectTab(tabIndex: Int) {
+        initialTab = tabIndex.coerceIn(0, 2)
+        tabSelectGeneration += 1
     }
 
     fun updateTheme(theme: KeyboardTheme) {
@@ -74,6 +82,7 @@ internal class ClipboardPanelView(context: Context) : KeyboardPanelComposeView(c
         val colors = palette ?: return
         ClipboardPanelContent(
             entries, shortcuts, loading, now, colors, resetGeneration,
+            initialTab, tabSelectGeneration,
             { feedback(KeyboardHapticType.KEY_PRESS); onSelect(it) },
             { feedback(KeyboardHapticType.KEY_PRESS); onSelectShortcut(it) },
             { feedback(KeyboardHapticType.CONTROL); onTogglePin(it) },
@@ -81,6 +90,7 @@ internal class ClipboardPanelView(context: Context) : KeyboardPanelComposeView(c
             { feedback(KeyboardHapticType.CONTROL); onClearAll() },
             { feedback(KeyboardHapticType.DELETE); onDelete() },
             { feedback(KeyboardHapticType.CONTROL); onReturn() },
+            { feedback(KeyboardHapticType.CONTROL); onOpenSettings() },
         )
     }
 

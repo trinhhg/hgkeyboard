@@ -20,14 +20,17 @@ data class ClipboardPreferences(
     val expiry: ClipboardExpiry,
     /** When true with [enabled], record non-sensitive system copies while Funput is the IME. */
     val captureSystemCopies: Boolean = true,
+    /** When true with [enabled] and [captureSystemCopies], save copied images/screenshots (SwiftKey style). */
+    val captureImages: Boolean = true,
 ) {
     /** Defaults shared by Settings and the IME. */
     companion object {
-        /** History on with short retention; system-copy capture on while Funput is the IME. */
+        /** History on with short retention; system-copy and image capture on while Funput is the IME. */
         val Default = ClipboardPreferences(
             enabled = true,
             expiry = ClipboardExpiry.Default,
             captureSystemCopies = true,
+            captureImages = true,
         )
     }
 }
@@ -44,6 +47,7 @@ class ClipboardSettings(context: Context) {
                 values[EnabledKey],
                 values[ExpiryKey],
                 values[CaptureSystemCopiesKey],
+                values[CaptureImagesKey],
             )
         }
         .distinctUntilChanged()
@@ -63,21 +67,33 @@ class ClipboardSettings(context: Context) {
         dataStore.edit { it[CaptureSystemCopiesKey] = enabled }
     }
 
+    /** Enables or disables capturing copied images and screenshots into clipboard history. */
+    suspend fun setCaptureImages(enabled: Boolean) {
+        dataStore.edit { it[CaptureImagesKey] = enabled }
+    }
+
     private companion object {
         val EnabledKey = booleanPreferencesKey("clipboard_history_enabled")
         val ExpiryKey = stringPreferencesKey("clipboard_history_expiry")
         val CaptureSystemCopiesKey = booleanPreferencesKey("clipboard_capture_system_copies")
+        val CaptureImagesKey = booleanPreferencesKey("clipboard_capture_images")
     }
 }
 
 internal object ClipboardSettingCodec {
-    fun decode(enabled: Boolean?, expiry: String?, captureSystemCopies: Boolean? = null) =
-        ClipboardPreferences(
-            enabled = enabled ?: ClipboardPreferences.Default.enabled,
-            expiry = ClipboardExpiry.fromStorageValue(expiry),
-            captureSystemCopies = captureSystemCopies
-                ?: ClipboardPreferences.Default.captureSystemCopies,
-        )
+    fun decode(
+        enabled: Boolean?,
+        expiry: String?,
+        captureSystemCopies: Boolean? = null,
+        captureImages: Boolean? = null,
+    ) = ClipboardPreferences(
+        enabled = enabled ?: ClipboardPreferences.Default.enabled,
+        expiry = ClipboardExpiry.fromStorageValue(expiry),
+        captureSystemCopies = captureSystemCopies
+            ?: ClipboardPreferences.Default.captureSystemCopies,
+        captureImages = captureImages
+            ?: ClipboardPreferences.Default.captureImages,
+    )
 
     fun encode(expiry: ClipboardExpiry): String = expiry.storageValue
 }

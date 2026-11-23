@@ -21,9 +21,11 @@ import app.funput.funput.ui.settings.sectionTitle
 internal fun ClipboardSection(
     enabled: Boolean,
     captureSystemCopies: Boolean,
+    captureImages: Boolean = true,
     expiry: ClipboardExpiry,
     onEnabledChanged: (Boolean) -> Unit,
     onCaptureSystemCopiesChanged: (Boolean) -> Unit,
+    onCaptureImagesChanged: (Boolean) -> Unit = {},
     onOpenExpiry: () -> Unit,
 ) {
     val divider = @Composable { FunputDivider(startInset = FunputRowDefaults.IconDividerInset) }
@@ -46,6 +48,16 @@ internal fun ClipboardSection(
             checked = captureSystemCopies,
             onCheckedChange = onCaptureSystemCopiesChanged,
             enabled = enabled,
+            icon = FunputIcons.Clipboard,
+            tint = FunputTint.GREEN,
+        )
+        divider()
+        ToggleRow(
+            title = stringResource(R.string.settings_clipboard_capture_images_title),
+            summary = stringResource(R.string.settings_clipboard_capture_images_summary),
+            checked = captureImages,
+            onCheckedChange = onCaptureImagesChanged,
+            enabled = enabled && captureSystemCopies,
             icon = FunputIcons.Clipboard,
             tint = FunputTint.GREEN,
         )

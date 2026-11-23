@@ -2,6 +2,7 @@ package app.funput.funput.keyboard.layout
 
 import app.funput.funput.keyboard.KeyboardFeatures
 import app.funput.funput.keyboard.layout.editors.EditorKeyboardLayouts
+import app.funput.funput.keyboard.layout.editors.NumpadLayouts
 import app.funput.funput.keyboard.layout.letters.usesCompactLetterRows
 import app.funput.funput.keyboard.layout.symbols.CompactSymbolLayouts
 import app.funput.funput.keyboard.layout.symbols.SymbolLayouts
@@ -41,6 +42,11 @@ internal object KeyboardLayoutResolver {
             } else {
                 SymbolLayouts.secondary(inputMethod, suggestionsEnabled, editorMode.isPassword)
             }
+            KeyboardLayoutMode.NUMPAD -> NumpadLayouts.resolve(
+                inputMethod = inputMethod,
+                suggestionsEnabled = suggestionsEnabled,
+                secure = editorMode.isPassword,
+            )
         }
         return layout.withSystemInputMethodSwitcher(systemInputMethodSwitcherVisible)
     }

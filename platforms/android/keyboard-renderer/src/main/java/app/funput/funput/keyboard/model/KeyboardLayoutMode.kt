@@ -5,4 +5,5 @@ enum class KeyboardLayoutMode {
     LETTERS,
     SYMBOLS_PRIMARY,
     SYMBOLS_SECONDARY,
+    NUMPAD,
 }

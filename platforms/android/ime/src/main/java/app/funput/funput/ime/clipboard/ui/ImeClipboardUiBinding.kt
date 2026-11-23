@@ -44,7 +44,17 @@ internal class ImeClipboardUiBinding(
         }
         value.callbacks.onClipboardPanelOpened = historyController::open
         value.callbacks.onClipboardEntrySelected = { entry ->
-            historyController.paste(entry.id) { pasted -> if (pasted) view?.showLettersPanel() }
+            historyController.paste(entry.id) { pasted ->
+                if (pasted) {
+                    view?.showLettersPanel()
+                } else if (entry.imagePath != null) {
+                    android.widget.Toast.makeText(
+                        context,
+                        "Ứng dụng này chưa hỗ trợ dán ảnh trực tiếp",
+                        android.widget.Toast.LENGTH_SHORT,
+                    ).show()
+                }
+            }
         }
         value.callbacks.onClipboardPinToggled = { historyController.togglePin(it.id, !it.isPinned) }
         value.callbacks.onClipboardEntryRemoved = { historyController.remove(it.id) }
@@ -74,7 +84,7 @@ internal class ImeClipboardUiBinding(
         view?.clipboardPanelEnabled = state.available
         view?.clipboardHistoryLoading = state.loading
         view?.clipboardEntries = state.entries.map {
-            KeyboardClipboardEntry(it.id, it.text, it.capturedAt, it.isPinned)
+            KeyboardClipboardEntry(it.id, it.text, it.capturedAt, it.isPinned, it.imagePath)
         }
     }
 

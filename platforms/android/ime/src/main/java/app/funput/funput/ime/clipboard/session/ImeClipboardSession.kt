@@ -21,6 +21,7 @@ internal class ImeClipboardSession(
     context: Context,
     scope: CoroutineScope,
     commitText: (String) -> Unit,
+    commitImage: (String) -> Boolean = { false },
     afterCommit: () -> Unit,
     preparePanel: () -> Unit,
 ) {
@@ -40,6 +41,7 @@ internal class ImeClipboardSession(
         preferences = preferences,
         storeFactory = storeFactory,
         commitText = commitText,
+        commitImage = commitImage,
         afterCommit = afterCommit,
         preparePanel = preparePanel,
         onCleared = controller::historyCleared,

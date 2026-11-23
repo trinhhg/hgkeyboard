@@ -17,7 +17,7 @@ internal class PlacementKeyIconRenderer(private val metrics: RenderMetrics) {
 
     fun draw(canvas: Canvas, bounds: KeyBounds, color: Int) {
         paint.color = color
-        paint.strokeWidth = metrics.dp(1.7f)
+        paint.strokeWidth = metrics.dp(1.45f)
         val halfWidth = min(bounds.width, bounds.height) * 0.21f
         val halfHeight = halfWidth * 0.62f
         val left = bounds.centerX - halfWidth

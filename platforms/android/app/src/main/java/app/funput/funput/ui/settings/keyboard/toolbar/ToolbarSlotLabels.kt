@@ -14,6 +14,8 @@ internal object ToolbarSlotLabels {
         ToolbarSlot.SETTINGS -> R.string.settings_toolbar_slot_settings
         ToolbarSlot.PLACEMENT -> R.string.settings_keyboard_mode_title
         ToolbarSlot.CLIPBOARD -> R.string.settings_toolbar_slot_clipboard
+        ToolbarSlot.NUMPAD -> R.string.settings_toolbar_slot_numpad
+        ToolbarSlot.SHORTCUTS -> R.string.settings_toolbar_slot_shortcuts
         ToolbarSlot.EMOJI -> R.string.settings_toolbar_slot_emoji
     }
 
@@ -23,6 +25,8 @@ internal object ToolbarSlotLabels {
         ToolbarSlot.SETTINGS -> FunputIcons.KeySize
         ToolbarSlot.PLACEMENT -> FunputIcons.Placement
         ToolbarSlot.CLIPBOARD -> FunputIcons.Clipboard
+        ToolbarSlot.NUMPAD -> FunputIcons.NumberRow
+        ToolbarSlot.SHORTCUTS -> FunputIcons.Shortcuts
         ToolbarSlot.EMOJI -> FunputIcons.Suggestions
     }
 }

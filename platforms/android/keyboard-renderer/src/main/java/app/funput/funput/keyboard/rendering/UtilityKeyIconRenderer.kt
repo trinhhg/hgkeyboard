@@ -21,7 +21,7 @@ internal class UtilityKeyIconRenderer(private val metrics: RenderMetrics) {
 
     fun updateTheme(theme: KeyboardTheme) {
         paint.color = theme.specialLabelColor
-        paint.strokeWidth = metrics.dp(1.6f)
+        paint.strokeWidth = metrics.dp(1.45f)
         isSwiftKeyStyle = theme.centerSecondaryLabel
     }
 
@@ -111,51 +111,79 @@ internal class UtilityKeyIconRenderer(private val metrics: RenderMetrics) {
 
     fun drawPlacement(canvas: Canvas, key: ResolvedKey) = placement.draw(canvas, key.bounds, paint.color)
 
-    /** Draws a T-shirt / theme icon (Laban Key style) for instant theme switching. */
+    /** Draws a SwiftKey-style palette icon for quick theme switching. */
     fun drawTheme(canvas: Canvas, key: ResolvedKey) {
-        val w = min(key.bounds.width, key.bounds.height) * 0.42f
-        val h = w * 0.9f
+        val r = min(key.bounds.width, key.bounds.height) * 0.21f
         val cx = key.bounds.centerX
         val cy = key.bounds.centerY
-        val left = cx - w / 2f
-        val right = cx + w / 2f
-        val top = cy - h / 2f
-        val bottom = cy + h / 2f
-        path.reset()
-        path.moveTo(cx - w * 0.22f, top)
-        path.quadTo(cx, top + h * 0.22f, cx + w * 0.22f, top)
-        path.lineTo(right, top + h * 0.16f)
-        path.lineTo(right - w * 0.12f, top + h * 0.46f)
-        path.lineTo(right - w * 0.24f, top + h * 0.40f)
-        path.lineTo(right - w * 0.24f, bottom)
-        path.lineTo(left + w * 0.24f, bottom)
-        path.lineTo(left + w * 0.24f, top + h * 0.40f)
-        path.lineTo(left + w * 0.12f, top + h * 0.46f)
-        path.lineTo(left, top + h * 0.16f)
-        path.close()
-        canvas.drawPath(path, paint)
+        drawingRect.set(cx - r, cy - r, cx + r, cy + r)
+        canvas.drawOval(drawingRect, paint)
+        val prevStyle = paint.style
+        paint.style = Paint.Style.FILL
+        val dotR = r * 0.14f
+        canvas.drawCircle(cx - r * 0.36f, cy - r * 0.14f, dotR, paint)
+        canvas.drawCircle(cx, cy - r * 0.42f, dotR, paint)
+        canvas.drawCircle(cx + r * 0.36f, cy - r * 0.14f, dotR, paint)
+        canvas.drawCircle(cx + r * 0.22f, cy + r * 0.34f, dotR * 1.15f, paint)
+        paint.style = prevStyle
     }
 
-    /** Draws a gear icon for quick Settings access. */
+    /** Draws a crisp 8-tooth SwiftKey outline gear icon for Settings. */
     fun drawSettings(canvas: Canvas, key: ResolvedKey) {
         val r = min(key.bounds.width, key.bounds.height) * 0.21f
         val cx = key.bounds.centerX
         val cy = key.bounds.centerY
-        canvas.drawCircle(cx, cy, r * 0.46f, paint)
-        val teeth = 6
+        canvas.drawCircle(cx, cy, r * 0.38f, paint)
+        canvas.drawCircle(cx, cy, r * 0.74f, paint)
+        val teeth = 8
         for (i in 0 until teeth) {
-            val angle = (i * 60.0) * Math.PI / 180.0
+            val angle = (i * 45.0) * Math.PI / 180.0
             val cos = kotlin.math.cos(angle).toFloat()
             val sin = kotlin.math.sin(angle).toFloat()
             canvas.drawLine(
-                cx + cos * r * 0.72f,
-                cy + sin * r * 0.72f,
-                cx + cos * r * 1.04f,
-                cy + sin * r * 1.04f,
+                cx + cos * r * 0.76f,
+                cy + sin * r * 0.76f,
+                cx + cos * r * 1.02f,
+                cy + sin * r * 1.02f,
                 paint,
             )
         }
-        canvas.drawCircle(cx, cy, r * 0.80f, paint)
+    }
+
+    /** Draws a 3x3 dialpad dot grid for instant Numpad (1234) access. */
+    fun drawNumpad(canvas: Canvas, key: ResolvedKey) {
+        val span = min(key.bounds.width, key.bounds.height) * 0.15f
+        val dotR = metrics.dp(1.35f)
+        val prevStyle = paint.style
+        paint.style = Paint.Style.FILL
+        for (row in -1..1) {
+            for (col in -1..1) {
+                canvas.drawCircle(
+                    key.bounds.centerX + col * span,
+                    key.bounds.centerY + row * span,
+                    dotR,
+                    paint,
+                )
+            }
+        }
+        paint.style = prevStyle
+    }
+
+    /** Draws a crisp lightning bolt outline icon for Quick Shortcuts (Gõ tắt). */
+    fun drawShortcuts(canvas: Canvas, key: ResolvedKey) {
+        val h = min(key.bounds.width, key.bounds.height) * 0.42f
+        val w = h * 0.62f
+        val cx = key.bounds.centerX
+        val cy = key.bounds.centerY
+        path.reset()
+        path.moveTo(cx + w * 0.1f, cy - h * 0.5f)
+        path.lineTo(cx - w * 0.48f, cy + h * 0.06f)
+        path.lineTo(cx - w * 0.02f, cy + h * 0.06f)
+        path.lineTo(cx - w * 0.1f, cy + h * 0.5f)
+        path.lineTo(cx + w * 0.48f, cy - h * 0.06f)
+        path.lineTo(cx + w * 0.02f, cy - h * 0.06f)
+        path.close()
+        canvas.drawPath(path, paint)
     }
 
     /** Draws a Laban-style hamburger (≡) or SwiftKey circle-chevron toggle on the toolbar. */

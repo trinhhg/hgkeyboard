@@ -11,6 +11,8 @@ internal fun bindKeyboardToolbar(
     openClipboard: () -> Unit,
     openPlacement: () -> Unit,
     openTheme: () -> Unit,
+    openNumpad: () -> Unit = {},
+    openShortcuts: () -> Unit = { callbacks.dispatchShortcutsPanelRequest() },
 ) {
     surface.callbacks.onEmojiRequested = openEmoji
     surface.callbacks.onClipboardPasteRequested = callbacks::dispatchClipboardPasteRequest
@@ -21,6 +23,9 @@ internal fun bindKeyboardToolbar(
     }
     surface.callbacks.onSettingsRequested = callbacks::dispatchSettingsRequest
     surface.callbacks.onThemeRequested = openTheme
+    surface.callbacks.onNumpadRequested = openNumpad
+    surface.callbacks.onShortcutsRequested = openShortcuts
+    surface.callbacks.onInputMethodPickerRequested = callbacks::dispatchInputMethodSwitchRequest
     surface.callbacks.onMicrophoneRequested = {
         if (surface.microphone.visible && surface.editorMode in listOf(
                 KeyboardEditorMode.TEXT, KeyboardEditorMode.SEARCH, KeyboardEditorMode.URL)) {

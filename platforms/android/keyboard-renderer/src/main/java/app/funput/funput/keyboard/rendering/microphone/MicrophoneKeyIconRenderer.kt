@@ -21,7 +21,7 @@ internal class MicrophoneKeyIconRenderer(private val metrics: RenderMetrics) {
     fun updateTheme(theme: KeyboardTheme) {
         normalColor = theme.specialLabelColor
         activeColor = theme.accentColor
-        paint.strokeWidth = metrics.dp(1.7f)
+        paint.strokeWidth = metrics.dp(1.45f)
     }
 
     fun draw(canvas: Canvas, key: ResolvedKey) {

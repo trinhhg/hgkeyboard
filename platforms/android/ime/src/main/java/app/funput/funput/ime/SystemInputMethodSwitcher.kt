@@ -22,6 +22,12 @@ internal class SystemInputMethodSwitcher(private val service: InputMethodService
         token()?.let(::legacySwitch) == true
     }
 
+    /** Opens Android's system IME chooser popup so the user picks the target keyboard explicitly. */
+    fun showPicker(): Boolean = runCatching {
+        manager.showInputMethodPicker()
+        true
+    }.getOrDefault(false)
+
     private fun token(): IBinder? = service.window?.window?.attributes?.token
 
     @Suppress("DEPRECATION")

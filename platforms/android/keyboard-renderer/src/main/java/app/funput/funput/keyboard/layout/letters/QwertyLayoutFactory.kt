@@ -110,13 +110,18 @@ private fun characterKey(
     )
 }
 
-internal fun keyboardToolbarSpec() = SuggestionBarSpec(
-    clipboardKey = specialKey("clipboard", "", KeyRole.CLIPBOARD, accessibilityLabel = "Bảng nhớ tạm"),
-    placementKey = specialKey("placement", "", KeyRole.PLACEMENT, accessibilityLabel = "Chế độ bàn phím"),
-    microphoneKey = specialKey("microphone", "", KeyRole.MICROPHONE, accessibilityLabel = "Nhập bằng giọng nói"),
-    emojiKey = specialKey("emoji", "", KeyRole.EMOJI, accessibilityLabel = "Biểu tượng cảm xúc"),
-    themeKey = specialKey("theme", "", KeyRole.THEME, accessibilityLabel = "Giao diện bàn phím"),
-    settingsKey = specialKey("settings", "", KeyRole.SETTINGS, accessibilityLabel = "Cài đặt Hg"),
-    toolbarToggleKey = specialKey("toolbar-toggle", "", KeyRole.TOOLBAR_TOGGLE, accessibilityLabel = "Mở thanh công cụ"),
-    suggestionsEnabled = KeyboardFeatures.SuggestionsEnabled,
+internal fun keyboardToolbarSpec(
+    idSuffix: String = "",
+    suggestionsEnabled: Boolean = KeyboardFeatures.SuggestionsEnabled,
+) = SuggestionBarSpec(
+    clipboardKey = specialKey("clipboard$idSuffix", "", KeyRole.CLIPBOARD, accessibilityLabel = "Bảng nhớ tạm"),
+    placementKey = specialKey("placement$idSuffix", "", KeyRole.PLACEMENT, accessibilityLabel = "Chế độ bàn phím"),
+    microphoneKey = specialKey("microphone$idSuffix", "", KeyRole.MICROPHONE, accessibilityLabel = "Nhập bằng giọng nói"),
+    emojiKey = specialKey("emoji$idSuffix", "", KeyRole.EMOJI, accessibilityLabel = "Biểu tượng cảm xúc"),
+    themeKey = specialKey("theme$idSuffix", "", KeyRole.THEME, accessibilityLabel = "Giao diện bàn phím"),
+    settingsKey = specialKey("settings$idSuffix", "", KeyRole.SETTINGS, accessibilityLabel = "Cài đặt Hg"),
+    numpadKey = specialKey("numpad$idSuffix", "", KeyRole.NUMPAD, accessibilityLabel = "Bàn phím số"),
+    shortcutsKey = specialKey("shortcuts$idSuffix", "", KeyRole.SHORTCUTS, accessibilityLabel = "Gõ tắt"),
+    toolbarToggleKey = specialKey("toolbar-toggle$idSuffix", "", KeyRole.TOOLBAR_TOGGLE, accessibilityLabel = "Mở thanh công cụ"),
+    suggestionsEnabled = suggestionsEnabled,
 )

@@ -13,7 +13,7 @@ internal class KeyboardPanelController {
     }
 
     fun showSymbols(mode: KeyboardLayoutMode) {
-        require(mode != KeyboardLayoutMode.LETTERS) { "Symbols panel requires a symbols layout" }
+        require(mode != KeyboardLayoutMode.LETTERS) { "Symbols panel requires a non-letters layout" }
         activePanel = KeyboardPanel.SYMBOLS
     }
 }

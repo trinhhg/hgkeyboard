@@ -104,11 +104,25 @@ internal fun ClipboardPreviewOverlay(
             Modifier.padding(20.dp).background(Color(surface)).padding(16.dp)
                 .clickable {},
         ) {
-            BasicText(
-                entry.text,
-                Modifier.heightIn(max = 150.dp).verticalScroll(rememberScrollState()),
-                TextStyle(Color(label), 14.sp),
-            )
+            val previewBitmap = androidx.compose.runtime.remember(entry.imagePath) {
+                entry.imagePath?.let { path ->
+                    runCatching { android.graphics.BitmapFactory.decodeFile(path)?.let { bmp -> bmp } }.getOrNull()
+                }
+            }
+            if (previewBitmap != null) {
+                androidx.compose.foundation.Image(
+                    bitmap = androidx.compose.ui.graphics.asImageBitmap(previewBitmap),
+                    contentDescription = entry.text,
+                    contentScale = androidx.compose.ui.layout.ContentScale.Fit,
+                    modifier = Modifier.heightIn(max = 170.dp),
+                )
+            } else {
+                BasicText(
+                    entry.text,
+                    Modifier.heightIn(max = 150.dp).verticalScroll(rememberScrollState()),
+                    TextStyle(Color(label), 14.sp),
+                )
+            }
             Row(Modifier.padding(top = 12.dp)) {
                 PreviewAction(
                     stringResource(if (entry.isPinned) R.string.clipboard_unpin else R.string.clipboard_pin),

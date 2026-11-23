@@ -87,6 +87,7 @@ internal class SettingsScreenState(
     val onPersonalSuggestionsChanged: (Boolean) -> Unit,
     val onClipboardEnabledChanged: (Boolean) -> Unit,
     val onClipboardCaptureSystemCopiesChanged: (Boolean) -> Unit = {},
+    val onClipboardCaptureImagesChanged: (Boolean) -> Unit = {},
     val onClipboardExpirySelected: (ClipboardExpiry) -> Unit,
     val onClearClipboardHistory: () -> Unit,
     val onResetPersonalSuggestions: () -> Unit,

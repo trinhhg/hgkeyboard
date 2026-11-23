@@ -66,10 +66,14 @@ private fun SideSlots(
     }
     slots.forEachIndexed { index, slot ->
         if (index > 0) divider()
+        val isVisible = slot !in state.preferences.hidden || slot == ToolbarSlot.EMOJI
         ToolbarSlotRow(
             slot = slot,
+            isVisible = isVisible,
+            canToggleVisibility = slot != ToolbarSlot.EMOJI,
             canMoveUp = index > 0,
             canMoveDown = index < slots.lastIndex,
+            onToggleVisibility = { state.onToggleVisibility(slot) },
             onMoveUp = { state.onMoveUp(side, index) },
             onMoveDown = { state.onMoveDown(side, index) },
             onMoveToOtherSide = { state.onMoveToOtherSide(side, index) },
@@ -84,8 +88,11 @@ private fun SideSlots(
 @Composable
 private fun ToolbarSlotRow(
     slot: ToolbarSlot,
+    isVisible: Boolean,
+    canToggleVisibility: Boolean,
     canMoveUp: Boolean,
     canMoveDown: Boolean,
+    onToggleVisibility: () -> Unit,
     onMoveUp: () -> Unit,
     onMoveDown: () -> Unit,
     onMoveToOtherSide: () -> Unit,
@@ -94,9 +101,18 @@ private fun ToolbarSlotRow(
     FunputRow(
         title = stringResource(ToolbarSlotLabels.title(slot)),
         icon = ToolbarSlotLabels.icon(slot),
-        tint = FunputTint.BLUE,
+        tint = if (isVisible) FunputTint.BLUE else FunputTint.SLATE,
         accessory = {
             Row(horizontalArrangement = Arrangement.spacedBy(FunputUi.spacing.tight), verticalAlignment = Alignment.CenterVertically) {
+                TextAction(
+                    label = stringResource(
+                        if (!canToggleVisibility) R.string.settings_toolbar_slot_fixed
+                        else if (isVisible) R.string.settings_toolbar_slot_visible
+                        else R.string.settings_toolbar_slot_hidden,
+                    ),
+                    enabled = canToggleVisibility,
+                    onClick = onToggleVisibility,
+                )
                 TextAction(stringResource(R.string.settings_toolbar_move_up), canMoveUp, onMoveUp)
                 TextAction(stringResource(R.string.settings_toolbar_move_down), canMoveDown, onMoveDown)
                 TextAction(moveOtherLabel, true, onMoveToOtherSide)

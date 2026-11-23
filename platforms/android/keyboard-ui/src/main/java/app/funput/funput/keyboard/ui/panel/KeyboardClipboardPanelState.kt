@@ -14,6 +14,7 @@ internal class KeyboardClipboardPanelState(
     private val showLetters: () -> Unit,
 ) {
     private var panel: ClipboardPanelView? = null
+    private var pendingTab: Int = 1
     var enabled: Boolean = false
         set(value) {
             field = value
@@ -29,8 +30,14 @@ internal class KeyboardClipboardPanelState(
 
     fun attach(value: ClipboardPanelView) {
         panel = value
+        value.selectTab(pendingTab)
         syncPanel()
         syncShortcuts()
+    }
+
+    fun selectTab(tabIndex: Int) {
+        pendingTab = tabIndex
+        panel?.selectTab(tabIndex)
     }
 
     fun editorModeChanged() = syncAvailability()

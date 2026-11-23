@@ -32,6 +32,8 @@ internal object KeyHapticTypeMapper {
         KeyRole.THEME,
         KeyRole.SETTINGS,
         KeyRole.TOOLBAR_TOGGLE,
+        KeyRole.NUMPAD,
+        KeyRole.SHORTCUTS,
         -> KeyboardHapticType.CONTROL
 
         KeyRole.BACKSPACE -> KeyboardHapticType.DELETE

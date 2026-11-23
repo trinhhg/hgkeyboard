@@ -9,8 +9,9 @@ data class KeyboardClipboardEntry(
     val text: String,
     val capturedAt: Instant,
     val isPinned: Boolean,
+    val imagePath: String? = null,
 ) {
-    init { require(text.isNotEmpty()) { "Clipboard text must not be empty" } }
+    init { require(text.isNotEmpty() || !imagePath.isNullOrBlank()) { "Clipboard text or image must not be empty" } }
 }
 
 internal data class ClipboardHistoryGroup(

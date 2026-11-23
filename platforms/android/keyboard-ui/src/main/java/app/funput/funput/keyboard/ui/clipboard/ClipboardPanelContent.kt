@@ -46,17 +46,21 @@ internal fun ClipboardPanelContent(
     entries: List<KeyboardClipboardEntry>, shortcuts: List<KeyboardShortcutEntry>,
     loading: Boolean, now: Instant,
     palette: KeyboardPanelPalette, reset: Int,
+    initialTab: Int = 1,
+    tabSelectGeneration: Int = 0,
     onSelect: (KeyboardClipboardEntry) -> Unit, onSelectShortcut: (KeyboardShortcutEntry) -> Unit,
     onPin: (KeyboardClipboardEntry) -> Unit,
     onRemove: (KeyboardClipboardEntry) -> Unit, onClear: () -> Unit,
     onDelete: () -> Unit, onReturn: () -> Unit,
+    onOpenSettings: () -> Unit = {},
 ) {
     var preview by remember { mutableStateOf<KeyboardClipboardEntry?>(null) }
     var revealedId by remember { mutableStateOf<java.util.UUID?>(null) }
-    var currentTab by remember { mutableIntStateOf(1) } // 0: GHI CHÚ, 1: BẢNG NHỚ TẠM (mặc định), 2: GÕ TẮT
+    var currentTab by remember { mutableIntStateOf(initialTab) } // 0: GHI CHÚ, 1: BẢNG NHỚ TẠM (mặc định), 2: GÕ TẮT
     val listState = rememberLazyListState()
 
     LaunchedEffect(reset) { listState.scrollToItem(0); revealedId = null }
+    LaunchedEffect(tabSelectGeneration) { currentTab = initialTab }
     LaunchedEffect(entries) {
         if (entries.none { it.id == revealedId }) revealedId = null
     }
@@ -75,11 +79,24 @@ internal fun ClipboardPanelContent(
                 0 -> {
                     val pinnedEntries = entries.filter { it.isPinned }
                     if (pinnedEntries.isEmpty()) {
-                        Empty(
-                            "Chưa có ghi chú đã ghim",
-                            "Ghim một mục trong Bảng nhớ tạm để lưu làm ghi chú dùng nhanh.",
-                            palette,
-                        )
+                        Column(
+                            Modifier.fillMaxSize().padding(20.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                        ) {
+                            BasicText(
+                                "Chưa có ghi chú đã ghim",
+                                Modifier.fillMaxWidth(),
+                                TextStyle(Color(palette.readable(palette.label)), 15.sp, fontWeight = FontWeight.Medium, textAlign = TextAlign.Center),
+                            )
+                            BasicText(
+                                "Nhấn biểu tượng Ghim trên thẻ ở Bảng nhớ tạm để lưu vào Ghi chú.",
+                                Modifier.fillMaxWidth().padding(top = 6.dp),
+                                TextStyle(Color(palette.readable(palette.secondaryLabel)), 13.sp, textAlign = TextAlign.Center),
+                            )
+                            Spacer(Modifier.height(12.dp))
+                            LabanActionChip("Mở Bảng nhớ tạm", onClick = { currentTab = 1 })
+                        }
                     } else {
                         LazyColumn(
                             modifier = Modifier.fillMaxSize().padding(horizontal = 4.dp, vertical = 4.dp),
@@ -103,55 +120,75 @@ internal fun ClipboardPanelContent(
                 }
                 2 -> {
                     if (shortcuts.isEmpty()) {
-                        Empty(
-                            "Gõ tắt",
-                            "Chưa có phím gõ tắt nào. Bạn có thể cài đặt thêm trong Cài đặt Hg.",
-                            palette,
-                        )
-                    } else {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp, vertical = 6.dp),
-                            verticalArrangement = Arrangement.spacedBy(6.dp),
+                        Column(
+                            Modifier.fillMaxSize().padding(20.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
                         ) {
-                            items(shortcuts.size, key = { shortcuts[it].trigger }) { index ->
-                                val item = shortcuts[index]
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .background(Color(palette.searchSurface))
-                                        .clickable { onSelectShortcut(item) }
-                                        .padding(horizontal = 12.dp, vertical = 10.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                                ) {
-                                    BasicText(
-                                        text = item.trigger,
+                            BasicText(
+                                "Chưa có từ gõ tắt",
+                                Modifier.fillMaxWidth(),
+                                TextStyle(Color(palette.readable(palette.label)), 15.sp, fontWeight = FontWeight.Medium, textAlign = TextAlign.Center),
+                            )
+                            BasicText(
+                                "Thêm từ viết tắt (ví dụ: k -> không) để nhập nhanh.",
+                                Modifier.fillMaxWidth().padding(top = 6.dp),
+                                TextStyle(Color(palette.readable(palette.secondaryLabel)), 13.sp, textAlign = TextAlign.Center),
+                            )
+                            Spacer(Modifier.height(12.dp))
+                            LabanActionChip("+ Quản lý Gõ tắt", onClick = onOpenSettings)
+                        }
+                    } else {
+                        Box(Modifier.fillMaxSize()) {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp, vertical = 6.dp),
+                                verticalArrangement = Arrangement.spacedBy(6.dp),
+                            ) {
+                                items(shortcuts.size, key = { shortcuts[it].trigger }) { index ->
+                                    val item = shortcuts[index]
+                                    Row(
                                         modifier = Modifier
-                                            .widthIn(min = 48.dp, max = 110.dp)
-                                            .clip(RoundedCornerShape(5.dp))
-                                            .background(Color(palette.accent).copy(alpha = 0.14f))
-                                            .padding(horizontal = 8.dp, vertical = 4.dp),
-                                        style = TextStyle(
-                                            color = Color(palette.accent),
-                                            fontSize = 13.sp,
-                                            fontWeight = FontWeight.Bold,
-                                        ),
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-                                    BasicText(
-                                        text = item.expansion,
-                                        modifier = Modifier.weight(1f),
-                                        style = TextStyle(
-                                            color = Color(palette.readable(palette.label)),
-                                            fontSize = 14.sp,
-                                        ),
-                                        maxLines = 2,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
+                                            .fillMaxWidth()
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(Color(palette.searchSurface))
+                                            .clickable { onSelectShortcut(item) }
+                                            .padding(horizontal = 12.dp, vertical = 10.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                    ) {
+                                        BasicText(
+                                            text = item.trigger,
+                                            modifier = Modifier
+                                                .widthIn(min = 48.dp, max = 110.dp)
+                                                .clip(RoundedCornerShape(5.dp))
+                                                .background(Color(palette.accent).copy(alpha = 0.14f))
+                                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                                            style = TextStyle(
+                                                color = Color(palette.accent),
+                                                fontSize = 13.sp,
+                                                fontWeight = FontWeight.Bold,
+                                            ),
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+                                        BasicText(
+                                            text = item.expansion,
+                                            modifier = Modifier.weight(1f),
+                                            style = TextStyle(
+                                                color = Color(palette.readable(palette.label)),
+                                                fontSize = 14.sp,
+                                            ),
+                                            maxLines = 2,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+                                    }
                                 }
                             }
+                            LabanActionChip(
+                                "+ Thêm / Sửa",
+                                onClick = onOpenSettings,
+                                modifier = Modifier.align(Alignment.BottomEnd).padding(12.dp),
+                            )
                         }
                     }
                 }
@@ -325,5 +362,26 @@ private fun Empty(title: String, detail: String?, palette: KeyboardPanelPalette)
                 ),
             )
         }
+    }
+}
+
+@Composable
+private fun LabanActionChip(
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(18.dp))
+            .background(Color(0xFF2563EB))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 8.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        BasicText(
+            text = label,
+            style = TextStyle(color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Medium),
+        )
     }
 }

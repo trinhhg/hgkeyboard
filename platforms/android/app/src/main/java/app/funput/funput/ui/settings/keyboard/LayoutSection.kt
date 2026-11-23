@@ -69,15 +69,6 @@ internal fun LayoutSection(
             tint = FunputTint.BLUE,
         )
         divider()
-        SegmentedRow(
-            title = stringResource(R.string.settings_toolbar_mode_title),
-            options = listOf("Theo style", "1 thanh", "2 thanh"),
-            selectedIndex = keyboardStyle.toolbarMode.ordinal,
-            onSelect = { onToolbarModeSelected(KeyboardToolbarMode.entries[it]) },
-            icon = FunputIcons.Suggestions,
-            tint = FunputTint.BLUE,
-        )
-        divider()
         LinkRow(
             title = stringResource(R.string.settings_keyboard_mode_title),
             value = placement.activeMode.label(),
@@ -150,15 +141,6 @@ internal fun LayoutSection(
             checked = keyboardStyle.alwaysCapitalizeLabels,
             onCheckedChange = onAlwaysCapitalizeLabelsChanged,
             icon = FunputIcons.Capitalize,
-            tint = FunputTint.BLUE,
-        )
-        divider()
-        ToggleRow(
-            title = stringResource(R.string.settings_bottom_emoji_title),
-            summary = stringResource(R.string.settings_bottom_emoji_summary),
-            checked = keyboardStyle.showBottomEmojiKey,
-            onCheckedChange = onBottomEmojiKeyChanged,
-            icon = FunputIcons.Suggestions,
             tint = FunputTint.BLUE,
         )
         divider()
